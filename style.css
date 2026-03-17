@@ -1,0 +1,105 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f4f9;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#top-bar {
+background-color: #333;
+color: white;
+width: 100%;
+padding: 15px 0;
+position: sticky;
+top: 0;
+z-index: 100;
+box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.score-board { font-size: 24px; font-weight: bold; color: #ffeb3b; margin-bottom: 5px; }
+.prestige-stats { font-size: 14px; color: #e0b0ff; font-weight: bold; }
+
+#nav-bar {
+display: flex;
+justify-content: center;
+gap: 5px;
+margin: 20px 0;
+width: 100%;
+max-width: 420px;
+flex-wrap: wrap;
+}
+.nav-btn {
+  background-color: #ddd;
+  color: #333;
+  flex: 1;
+  padding: 10px 5px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 2px solid #ccc;
+  cursor: pointer;
+  font-weight: bold;
+  min-width: 100px;
+}
+.nav-btn.active { background-color: #4CAF50; color: white; border-color: #2e7d32; }
+
+#game-container {
+background-color: white;
+padding: 30px;
+border-radius: 15px;
+box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+max-width: 400px;
+width: 90%;
+margin-bottom: 10px;
+}
+
+.page { display: none; flex-direction: column; align-items: center; width: 100%; }
+.page.active { display: flex; }
+
+h2 { color: #d2691e; margin-top: 0; }
+
+#cookie {
+cursor: pointer; user-select: none; transition: transform 0.05s;
+margin: 20px 0; -webkit-user-drag: none;
+}
+#cookie:active { transform: scale(0.9); }
+
+.stats { font-size: 14px; color: #666; margin-bottom: 10px; }
+.shop { margin-top: 20px; border-top: 2px solid #eee; padding-top: 20px; width: 100%; }
+
+button {
+  background-color: #4CAF50; color: white; border: none; padding: 12px 20px;
+  margin: 8px 0; border-radius: 8px; cursor: pointer; font-size: 16px;
+  font-weight: bold; transition: background-color 0.2s, transform 0.1s; width: 100%;
+}
+button:hover:not(:disabled) { background-color: #45a049; transform: translateY(-2px); }
+button:disabled { background-color: #cccccc; cursor: not-allowed; color: #888; }
+
+#btn-mystery { background-color: #ff9800; padding: 20px; font-size: 18px; }
+#btn-mystery:hover:not(:disabled) { background-color: #e68a00; }
+#btn-prestige { background-color: #8a2be2; margin-top: 20px; }
+#btn-prestige:hover:not(:disabled) { background-color: #7a1fd1; }
+
+.upg-btn { background-color: #0288d1; }
+.upg-btn:hover:not(:disabled) { background-color: #0277bd; }
+.upg-btn.bought { background-color: #ffd700; color: #333; cursor: default; transform: none; }
+
+.info-box { font-size: 14px; color: #555; margin-bottom: 15px; background: #fff3e0; padding: 10px; border-radius: 8px;}
+
+/* RUOTA */
+.wheel-container { position: relative; width: 250px; height: 250px; margin: 20px auto; border-radius: 50%; border: 6px solid #333; box-shadow: 0 0 15px rgba(0,0,0,0.3); }
+.pointer { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #222; z-index: 10; }
+.wheel { width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(#f44336 0% 40%, #2196F3 40% 75%, #4CAF50 75% 95%, #FFD700 95% 100%); transition: transform 4s cubic-bezier(0.17, 0.67, 0.1, 1); transform: rotate(0deg); }
+.legend { text-align: left; font-size: 14px; margin: 10px auto; width: 100%; background: #f9f9f9; padding: 10px; border-radius: 8px; box-sizing: border-box; }
+.legend div { margin: 5px 0; }
+.color-box { display: inline-block; width: 15px; height: 15px; margin-right: 8px; vertical-align: middle; border-radius: 3px; }
+
+.options { display: flex; gap: 10px; justify-content: center; width: 100%; max-width: 400px; }
+.options button { font-size: 12px; padding: 8px; background-color: #888; }
+.options button:hover { background-color: #666; }
+#btn-reset { background-color: #d32f2f; }
+#btn-reset:hover { background-color: #b71c1c; }
+
+#save-notification { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 20px; font-size: 14px; opacity: 0; transition: opacity 0.5s; pointer-events: none; z-index: 1000; }

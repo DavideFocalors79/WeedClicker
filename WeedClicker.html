@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weed Clicker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="top-bar">
+    <div class="score-board">Grammi: <span id="score">0</span></div>
+    <div class="prestige-stats">✨ Moltiplicatore Prestigio: x<span id="prestige-display">1</span> ✨</div>
+</div>
+
+<div id="nav-bar">
+    <button id="nav-forno" class="nav-btn active" onclick="switchPage('forno')">Il Giro</button>
+    <button id="nav-upgrades" class="nav-btn" onclick="switchPage('upgrades')">Roba Buona</button>
+    <button id="nav-casino" class="nav-btn" onclick="switchPage('casino')">🎡 Crazy Time!</button>
+</div>
+
+<div id="game-container">
+
+    <div id="page-forno" class="page active">
+        <h2>Produzione</h2>
+        <img id="cookie" src="barchi.png" width="150" onclick="clickCookie()">
+        <div class="stats">
+            Per click (Totale): <span id="eff-click-power">1</span><br>
+            Al secondo (Totale): <span id="eff-bps">0</span>
+        </div>
+
+        <div class="shop">
+            <h3>🛒 Negozio Base</h3>
+            <button id="btn-click-upgrade" onclick="buyClickUpgrade()">
+                👆 Migliora Click (Costo: <span id="click-cost">10</span>) +1g/click
+            </button>
+            <button id="btn-auto-click" onclick="buyAutoClicker()">
+                🌿 Compra Erba (Costo: <span id="auto-cost">50</span>) +1g/s
+            </button>
+            <button id="btn-dry" onclick="Buydry()">
+                🏭 Compra Dry (Costo: <span id="dry-cost">500</span>) +10g/s
+            </button>
+            <button id="btn-frozen" onclick="BuyfrozenCost()">
+                🏭 Compra Frozen (Costo: <span id="frozen-cost">1500</span>) +25g/s
+            </button>
+
+            <button id="btn-prestige" onclick="doPrestige()">
+                    🌌 Fai Prestigio (Richiede <span id="prestige-cost">10000</span>)
+            </button>
+        </div>
+    </div>
+
+    <div id="page-upgrades" class="page">
+        <h2>Il Ghetto</h2>
+        <div class="info-box">
+           Il ghetto ti offre potenziamenti enormi,si acquistano una sola volta e si perdono quando fai Prestigio.
+        </div>
+        <div class="shop">
+            <button id="btn-upg1" class="upg-btn" onclick="buyUpgrade(1, 2500)">
+                🖱️ Sniffer (Click x2) - 2.500
+            </button>
+            <button id="btn-upg2" class="upg-btn" onclick="buyUpgrade(2, 10000)">
+                ✨ Cocaina (WPS x2) - 10.000
+            </button>
+            <button id="btn-upg3" class="upg-btn" onclick="buyUpgrade(3, 50000)">
+                🍫 Robba buona (Click x3) - 50.000
+            </button>
+            <button id="btn-upg4" class="upg-btn" onclick="buyUpgrade(4, 100000)">
+                🔥 ts lit as fuck (WPS x3) - 100.000
+            </button>
+        </div>
+    </div>
+
+    <div id="page-casino" class="page">
+         <h2>Il Crazy Time!</h2>
+
+        <div class="wheel-container">
+            <div class="pointer"></div>
+            <div class="wheel" id="wheel"></div>
+        </div>
+
+        <div class="legend">
+            <div><span class="color-box" style="background: #f44336;"></span> Sfortuna (Niente) - 40%</div>
+            <div><span class="color-box" style="background: #2196F3;"></span> Triplica la Robba - 35%</div>
+            <div><span class="color-box" style="background: #4CAF50;"></span> +25 Base per Click - 20%</div>
+            <div><span class="color-box" style="background: #FFD700;"></span> <b>JACKPOT (+150 W/s) - 5%</b></div>
+        </div>
+
+        <div class="shop">
+            <button id="btn-mystery" onclick="spinWheel()">
+                🎡 Gira la Ruota (Costo: <span id="mystery-cost">1000</span>)
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<div class="options">
+    <button onclick="saveGame()">💾 Salva Ora</button>
+    <button id="btn-reset" onclick="resetGame()">🗑️ Azzera Dati</button>
+</div>
+<div id="save-notification">Gioco Salvato!</div>
+
+<script src="script.js"></script>
+</body>
+</html>
