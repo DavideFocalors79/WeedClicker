@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weed Clicker - Crazy Time</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #top-bar {
+            background-color: #333;
+            color: white;
+            width: 100%;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .score-board { font-size: 24px; font-weight: bold; color: #ffeb3b; margin-bottom: 5px; }
+        .prestige-stats { font-size: 14px; color: #e0b0ff; font-weight: bold; }
+
+        #nav-bar {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 400px;
+        }
+        .nav-btn {
+            background-color: #ddd;
+            color: #333;
+            flex: 1;
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 8px;
+            border: 2px solid #ccc;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .nav-btn.active {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #2e7d32;
+        }
+
+        #game-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 90%;
+            margin-bottom: 10px;
+        }
+
+        .page { display: none; flex-direction: column; align-items: center; width: 100%; }
+        .page.active { display: flex; }
+
+        h2 { color: #d2691e; margin-top: 0; }
+
+        #cookie {
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.05s;
+            margin: 20px 0;
+            -webkit-user-drag: none;
+        }
+        #cookie:active { transform: scale(0.9); }
+
+        .stats { font-size: 14px; color: #666; margin-bottom: 10px; }
+        .shop { margin-top: 20px; border-top: 2px solid #eee; padding-top: 20px; width: 100%; }
+
+        button {
+            background-color: #4CAF50; color: white; border: none; padding: 12px 20px;
+            margin: 8px 0; border-radius: 8px; cursor: pointer; font-size: 16px;
+            font-weight: bold; transition: background-color 0.2s, transform 0.1s; width: 100%;
+        }
+        button:hover:not(:disabled) { background-color: #45a049; transform: translateY(-2px); }
+        button:disabled { background-color: #cccccc; cursor: not-allowed; color: #888; }
+
+        #btn-mystery { background-color: #ff9800; padding: 20px; font-size: 18px; }
+        #btn-mystery:hover:not(:disabled) { background-color: #e68a00; }
+        #btn-prestige { background-color: #8a2be2; margin-top: 20px; }
+        #btn-prestige:hover:not(:disabled) { background-color: #7a1fd1; }
+
+        .casino-info { font-size: 14px; color: #555; margin-bottom: 15px; background: #fff3e0; padding: 10px; border-radius: 8px;}
+
+        /* STILE DELLA RUOTA */
+        .wheel-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            margin: 20px auto;
+            border-radius: 50%;
+            border: 6px solid #333;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+        .pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid #222;
+            z-index: 10;
+        }
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(#f44336 0% 40%, #2196F3 40% 75%, #4CAF50 75% 95%, #FFD700 95% 100%);
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.1, 1);
+            transform: rotate(0deg);
+        }
+
+        .legend {
+            text-align: left; font-size: 14px; margin: 10px auto; width: 100%;
+            background: #f9f9f9; padding: 10px; border-radius: 8px; box-sizing: border-box;
+        }
+        .legend div { margin: 5px 0; }
+        .color-box {
+            display: inline-block; width: 15px; height: 15px; margin-right: 8px;
+            vertical-align: middle; border-radius: 3px;
+        }
+
+        /* OPZIONI DI SALVATAGGIO */
+        .options {
+            display: flex; gap: 10px; justify-content: center; width: 100%; max-width: 400px;
+        }
+        .options button { font-size: 12px; padding: 8px; background-color: #888; }
+        .options button:hover { background-color: #666; }
+        #btn-reset { background-color: #d32f2f; }
+        #btn-reset:hover { background-color: #b71c1c; }
+
+        #save-notification {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.8); color: white; padding: 10px 20px;
+            border-radius: 20px; font-size: 14px; opacity: 0; transition: opacity 0.5s;
+            pointer-events: none; z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="top-bar">
+    <div class="score-board">Grammi: <span id="score">0</span> </div>
+    <div class="prestige-stats">✨ Moltiplicatore Prestigio: x<span id="prestige-display">1</span> ✨</div>
+</div>
+
+    <div id="nav-bar">
+    <button id="nav-forno" class="nav-btn active" onclick="switchPage('forno')">Il Giro</button>
+    <button id="nav-casino" class="nav-btn" onclick="switchPage('casino')">🎡 Crazy Time!</button>
+</div>
+
+<div id="game-container">
+     <div id="page-forno" class="page active">
+ <h1>Barchi Clicker 🌿</h1>
+    
+
+    <img id="cookie" src="barchi.png" width="150" onclick="clickCookie()">
+    
+    <div class="stats">
+        Grammi per click: <span id="click-power">1</span><br>
+        Grammi al secondo: <span id="bps">0</span>
+    </div>
+    
+    <div class="shop">
+        <h3>🛒 Negozio</h3>
+        <button id="btn-click-upgrade" onclick="buyClickUpgrade()">
+            👆 Migliora Click (Costo: <span id="click-cost">10</span>) +1g/click
+        </button>
+        <button id="btn-auto-click" onclick="buyAutoClicker()">
+            🌿 Compra Erba (Costo: <span id="auto-cost">50</span>) +1g/s
+        </button>
+        <button id="btn-dry" onclick="Buydry()">
+            🏭 Compra Dry (Costo: <span id="dry-cost">500</span>) +10g/s
+        </button>
+        <button id="btn-frozen" onclick="BuyfrozenCost()">
+            🏭 Compra Frozen (Costo: <span id="frozen-cost">1500</span>) +25/s
+        </button>
+        
+        <button id="btn-prestige" onclick="doPrestige()">
+                🌌 Fai Prestigio (Richiede <span id="prestige-cost">10000</span>)
+        </button>
+    </div>
+    </div>
+
+     <div id="page-casino" class="page">
+        <h2>Il Crazy Time!</h2>
+        
+        <div class="wheel-container">
+            <div class="pointer"></div>
+            <div class="wheel" id="wheel"></div>
+        </div>
+        
+        <div class="legend">
+            <div><span class="color-box" style="background: #f44336;"></span> Sfortuna (Niente) - 40%</div>
+            <div><span class="color-box" style="background: #2196F3;"></span> Raddoppia Spesa - 35%</div>
+            <div><span class="color-box" style="background: #4CAF50;"></span> +5 Base per Click - 20%</div>
+            <div><span class="color-box" style="background: #FFD700;"></span> <b>JACKPOT (+20 G/s) - 5%</b></div>
+        </div>
+
+        <div class="shop">
+            <button id="btn-mystery" onclick="spinWheel()">
+                🎡 Gira la Ruota (Costo: <span id="mystery-cost">1000</span>)
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<div class="options">
+    <button onclick="saveGame()">💾 Salva Ora</button>
+    <button id="btn-reset" onclick="resetGame()">🗑️ Azzera Dati</button>
+</div>
+
+
+
+<script>
+    // --- VARIABILI ---
+    let score = 1;
+    let clickPower = 1;
+    let autoClickBPS = 0;
+    let prestigeMultiplier = 1; // Il nuovo moltiplicatore!
+    
+    let clickUpgradeCost = 10;
+    let autoClickerCost = 50;
+    let dryCost = 500;
+    let frozenCost = 1500;
+    let mysteryCost = 1000;
+
+    let prestigeThreshold = 3000; // Quanti biscotti servono per resettare
+
+    let wheelRotation = 0;
+    let isSpinning = false;
+
+    // --- COLLEGAMENTI HTML ---
+    const scoreDisplay = document.getElementById('score');
+    const clickPowerDisplay = document.getElementById('click-power');
+    const bpsDisplay = document.getElementById('bps');
+    const clickCostDisplay = document.getElementById('click-cost');
+    const autoCostDisplay = document.getElementById('auto-cost');
+    const dryCostDisplay = document.getElementById('dry-cost');
+    const frozenCostDisplay = document.getElementById('frozen-cost');
+    const mysteryCostDisplay = document.getElementById('mystery-cost');
+    const prestigeDisplay = document.getElementById('prestige-display');
+
+    const prestigeCostDisplay = document.getElementById('prestige-cost');
+    
+    const btnClickUpgrade = document.getElementById('btn-click-upgrade');
+    const btnAutoClick = document.getElementById('btn-auto-click');
+    const btnDry = document.getElementById('btn-dry');
+    const btnFrozen = document.getElementById('btn-frozen');
+    const btnMystery = document.getElementById('btn-mystery');
+    const btnPrestige = document.getElementById('btn-prestige');
+    const wheelElement = document.getElementById('wheel');
+    const saveNotification = document.getElementById('save-notification');
+
+    // --- FUNZIONI DEL GIOCO ---
+
+    function saveGame() {
+        // Creiamo un "pacchetto" con tutte le nostre variabili
+        const gameSave = {
+            score: score,
+            clickPower: clickPower,
+            autoClickBPS: autoClickBPS,
+            prestigeMultiplier: prestigeMultiplier,
+            clickUpgradeCost: clickUpgradeCost,
+            autoClickerCost: autoClickerCost,
+            dryCost: dryCost,
+            frozenCost: frozenCost,
+            mysteryCost: mysteryCost,
+            prestigeThreshold: prestigeThreshold
+        };
+        // Salviamo il pacchetto nel browser sotto il nome "biscottoSave"
+        localStorage.setItem("IlGiroSave", JSON.stringify(gameSave));
+
+        // Mostra una piccola notifica
+        saveNotification.style.opacity = 1;
+        setTimeout(() => { saveNotification.style.opacity = 0; }, 1500);
+    }
+
+    function loadGame() {
+        // Controlliamo se esiste un salvataggio precedente
+        const savedGame = JSON.parse(localStorage.getItem("IlGiroSave"));
+        if (savedGame !== null) {
+            // Se esiste, sovrascriviamo le variabili di base con quelle salvate
+            if (typeof savedGame.score !== "undefined") score = savedGame.score;
+            if (typeof savedGame.clickPower !== "undefined") clickPower = savedGame.clickPower;
+            if (typeof savedGame.autoClickBPS !== "undefined") autoClickBPS = savedGame.autoClickBPS;
+            if (typeof savedGame.prestigeMultiplier !== "undefined") prestigeMultiplier = savedGame.prestigeMultiplier;
+            if (typeof savedGame.clickUpgradeCost !== "undefined") clickUpgradeCost = savedGame.clickUpgradeCost;
+            if (typeof savedGame.autoClickerCost !== "undefined") autoClickerCost = savedGame.autoClickerCost;
+            if (typeof savedGame.dryCost !== "undefined") factoryCost = savedGame.dryCost;
+            if (typeof savedGame.frozenCost !== "undefined") factoryCost = savedGame.frozenCost;
+            if (typeof savedGame.mysteryCost !== "undefined") mysteryCost = savedGame.mysteryCost;
+            if (typeof savedGame.prestigeThreshold !== "undefined") prestigeThreshold = savedGame.prestigeThreshold;
+        }
+    }
+
+    function resetGame() {
+        if (confirm("Sei sicuro di voler cancellare TUTTI i tuoi progressi? Questa azione non può essere annullata!")) {
+            localStorage.removeItem("IlGiroSave");
+            location.reload(); // Ricarica la pagina per azzerare tutto
+        }
+    }
+
+
+    function switchPage(pageName) {
+        document.getElementById('page-forno').classList.remove('active');
+        document.getElementById('page-casino').classList.remove('active');
+        document.getElementById('nav-forno').classList.remove('active');
+        document.getElementById('nav-casino').classList.remove('active');
+        
+        document.getElementById('page-' + pageName).classList.add('active');
+        document.getElementById('nav-' + pageName).classList.add('active');
+    }
+
+    function clickCookie() {
+        // Aggiungiamo il moltiplicatore del prestigio!
+        score += (clickPower * prestigeMultiplier);
+        updateDisplay();
+    }
+
+    function buyClickUpgrade() {
+        if (score >= clickUpgradeCost) {
+            score -= clickUpgradeCost;
+            clickPower += 1;
+            clickUpgradeCost = Math.floor(clickUpgradeCost * 1.5); 
+            updateDisplay();
+        }
+    }
+
+    function buyAutoClicker() {
+        if (score >= autoClickerCost) {
+            score -= autoClickerCost;
+            autoClickBPS += 1;
+            autoClickerCost = Math.floor(autoClickerCost * 1.5); 
+            updateDisplay();
+        }
+    }
+
+    function Buydry() {
+        if (score >= dryCost) {
+            score -= dryCost;
+            autoClickBPS += 10; // Aggiunge 10 biscotti al secondo base
+            dryCost = Math.floor(dryCost * 1.5); 
+            updateDisplay();
+        }
+    }
+
+    function BuyfrozenCost() {
+        if (score >= frozenCost) {
+            score -= frozenCost;
+            autoClickBPS += 25; // Aggiunge 25 biscotti al secondo base
+            frozenCost = Math.floor(frozenCost * 1.5); 
+            updateDisplay();
+        }
+    }
+
+    function spinWheel() {
+        // Se sta già girando o non hai soldi, blocca il click
+        if (isSpinning || score < mysteryCost) return;
+
+        score -= mysteryCost;
+        isSpinning = true;
+        updateDisplay();
+
+        let roll = Math.random(); 
+        let targetAngle;
+        let resultCallback;
+
+        // La ruota è un cerchio di 360 gradi. Calcoliamo in quale grado fermarla.
+        if (roll < 0.40) { 
+            // 40% probabilità -> Settore Rosso (Tra 0° e 144°)
+            targetAngle = Math.floor(Math.random() * 130) + 5; 
+            resultCallback = () => alert("Sfortuna! La ruota si è fermata sul rosso. Adesso i caramba ti hanno preso tutto! 😭");
+        } 
+        else if (roll < 0.75) { 
+            // 35% probabilità -> Settore Blu (Tra 144° e 270°)
+            targetAngle = Math.floor(Math.random() * 110) + 150;
+            let vincita = mysteryCost * 2;
+            resultCallback = () => {
+                score += vincita;
+                alert("Vittoria! Il settore Blu Bryan ti ha dato il doppio! (+" + vincita + ") g");
+            };
+        } 
+        else if (roll < 0.95) { 
+            // 20% probabilità -> Settore Verde (Tra 270° e 342°)
+            targetAngle = Math.floor(Math.random() * 60) + 275;
+            resultCallback = () => {
+                clickPower += 5;
+                alert("Epico! Settore Verde! Base per click aumentata di +5! 🧤");
+            };
+        } 
+        else { 
+            // 5% probabilità -> Settore Oro (Tra 342° e 360°)
+            targetAngle = Math.floor(Math.random() * 10) + 345;
+            resultCallback = () => {
+                autoClickBPS += 20;
+                alert("🎰 JACKPOT! 🎰 Settore d'Oro! Produzione Base +20 B/s! 🏭✨");
+            };
+        }
+
+        // Calcolo della rotazione fisica: 
+        // Facciamo fare alla ruota 5 giri completi (360 * 5) + i gradi necessari per fermarsi al target
+        let spins = 5; 
+        let extraRotation = 360 - targetAngle;
+        let currentMod = wheelRotation % 360;
+        
+        wheelRotation += (360 * spins) + (extraRotation - currentMod);
+        
+        // Applica l'animazione CSS
+        wheelElement.style.transform = `rotate(${wheelRotation}deg)`;
+
+        // Aspetta 4 secondi (la durata dell'animazione) prima di dare il premio e sbloccare tutto
+        setTimeout(() => {
+            resultCallback(); // Da il premio calcolato prima
+            mysteryCost = Math.floor(mysteryCost * 1.2); 
+            isSpinning = false;
+            updateDisplay();
+        }, 4000);
+    }
+
+    // NUOVA FUNZIONE: Il Prestigio
+ function doPrestige() {
+        if (score >= prestigeThreshold) {
+            prestigeMultiplier += 1;
+            
+            // Aumenta il costo per il prossimo Prestigio (moltiplica per 3)
+            prestigeThreshold = Math.floor(prestigeThreshold * 3);
+            
+            score = 0; clickPower = 1; autoClickBPS = 0;
+            clickUpgradeCost = 10; autoClickerCost = 50; dryCost = 500; frozenCost = 1500; mysteryCost = 1000;
+            
+            alert("Hai fatto Prestigio! Ora il tuo moltiplicatore è x" + prestigeMultiplier + ". Il prossimo prestigio richiederà " + prestigeThreshold + " Grammi.");
+            updateDisplay();
+            switchPage('forno'); 
+        }
+    }
+
+    function updateDisplay() {
+        scoreDisplay.textContent = Math.floor(score);
+        clickPowerDisplay.textContent = clickPower * prestigeMultiplier; // Mostra il click power totale con moltiplicatore
+        bpsDisplay.textContent = autoClickBPS * prestigeMultiplier; // Mostra il BPS totale con moltiplicatore
+        clickCostDisplay.textContent = clickUpgradeCost;
+        autoCostDisplay.textContent = autoClickerCost;
+        dryCostDisplay.textContent = dryCost;
+        frozenCostDisplay.textContent = frozenCost;
+        prestigeCostDisplay.textContent = prestigeThreshold;
+        prestigeDisplay.textContent = prestigeMultiplier;
+        mysteryCostDisplay.textContent = mysteryCost;
+
+        // Gestione bottoni
+        btnClickUpgrade.disabled = score < clickUpgradeCost;
+        btnAutoClick.disabled = score < autoClickerCost;
+        btnDry.disabled = score < dryCost;
+        btnFrozen.disabled = score < frozenCost;
+        btnMystery.disabled = score < mysteryCost || isSpinning;
+        btnPrestige.disabled = score < prestigeThreshold; // Si attiva solo a 1000 biscotti
+    }
+
+    // Loop automatico (con moltiplicatore)
+    // --- INIZIALIZZAZIONE DEL GIOCO ---
+
+    // 1. Appena si apre la pagina, prova a caricare un salvataggio precedente
+    loadGame();
+    // 2. Aggiorna la grafica con i dati caricati
+    updateDisplay();
+
+    // 3. Loop che genera i biscotti ogni secondo
+    setInterval(function() {
+        if (autoClickBPS > 0) {
+            score += (autoClickBPS * prestigeMultiplier);
+            updateDisplay();
+        }
+    }, 1000);
+
+    // 4. Salvataggio Automatico: salva silenziosamente ogni 5 secondi
+    setInterval(function() {
+        saveGame();
+    }, 5000);
+
+    updateDisplay();
+</script>
+
+</body>
+</html>
