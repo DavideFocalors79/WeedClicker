@@ -19,13 +19,13 @@ let hasUpgrade3 = false; // Click x3
 let hasUpgrade4 = false; // BPS x3
 
 // Permanenti (non resettano al prestige)
-let hasPermanent1 = false; // +1 click
-let hasPermanent2 = false; // +5 bps
-let hasPermanent3 = false; // +0.5 prestige multiplier
-let hasPermanent4 = false; // +10 bps
-let permanentClickBonus = 0;
-let permanentBpsBonus = 0;
-let permanentPrestigeBonus = 0;
+let hasPermanent1 = false; // Click multiplier
+let hasPermanent2 = false; // BPS multiplier
+let hasPermanent3 = false; // Prestige multiplier
+let hasPermanent4 = false; // BPS multiplier
+let permanentClickMultiplier = 1;
+let permanentBpsMultiplier = 1;
+let permanentPrestigeMultiplier = 1;
 
 let wheelRotation = 0;
 let isSpinning = false;
@@ -55,16 +55,16 @@ function getEffClick() {
   let multiplier = 1;
   if (hasUpgrade1) multiplier *= 2;
   if (hasUpgrade3) multiplier *= 3;
-  const effectivePrestige = prestigeMultiplier + permanentPrestigeBonus;
-  return (clickPower + permanentClickBonus) * multiplier * effectivePrestige;
+  const effectivePrestige = prestigeMultiplier * permanentPrestigeMultiplier;
+  return clickPower * multiplier * effectivePrestige * permanentClickMultiplier;
 }
 
 function getEffBps() {
   let multiplier = 1;
   if (hasUpgrade2) multiplier *= 2;
   if (hasUpgrade4) multiplier *= 3;
-  const effectivePrestige = prestigeMultiplier + permanentPrestigeBonus;
-  return (autoClickBPS + permanentBpsBonus) * multiplier * effectivePrestige;
+  const effectivePrestige = prestigeMultiplier * permanentPrestigeMultiplier;
+  return autoClickBPS * multiplier * effectivePrestige * permanentBpsMultiplier;
 }
 
 // --- FUNZIONI DI SALVATAGGIO ---
@@ -77,7 +77,7 @@ function saveGame() {
     prestigeThreshold: prestigeThreshold,
     hasUpg1: hasUpgrade1, hasUpg2: hasUpgrade2, hasUpg3: hasUpgrade3, hasUpg4: hasUpgrade4,
     hasPermanent1: hasPermanent1, hasPermanent2: hasPermanent2, hasPermanent3: hasPermanent3, hasPermanent4: hasPermanent4,
-    permanentClickBonus: permanentClickBonus, permanentBpsBonus: permanentBpsBonus, permanentPrestigeBonus: permanentPrestigeBonus
+    permanentClickMultiplier: permanentClickMultiplier, permanentBpsMultiplier: permanentBpsMultiplier, permanentPrestigeMultiplier: permanentPrestigeMultiplier
   };
   localStorage.setItem("IlGiroSave", JSON.stringify(gameSave));
   saveNotification.style.opacity = 1;
@@ -102,9 +102,9 @@ function loadGame() {
     if (typeof savedGame.hasPermanent2 !== "undefined") hasPermanent2 = savedGame.hasPermanent2;
     if (typeof savedGame.hasPermanent3 !== "undefined") hasPermanent3 = savedGame.hasPermanent3;
     if (typeof savedGame.hasPermanent4 !== "undefined") hasPermanent4 = savedGame.hasPermanent4;
-    if (typeof savedGame.permanentClickBonus !== "undefined") permanentClickBonus = savedGame.permanentClickBonus;
-    if (typeof savedGame.permanentBpsBonus !== "undefined") permanentBpsBonus = savedGame.permanentBpsBonus;
-    if (typeof savedGame.permanentPrestigeBonus !== "undefined") permanentPrestigeBonus = savedGame.permanentPrestigeBonus;
+    if (typeof savedGame.permanentClickMultiplier !== "undefined") permanentClickMultiplier = savedGame.permanentClickMultiplier;
+    if (typeof savedGame.permanentBpsMultiplier !== "undefined") permanentBpsMultiplier = savedGame.permanentBpsMultiplier;
+    if (typeof savedGame.permanentPrestigeMultiplier !== "undefined") permanentPrestigeMultiplier = savedGame.permanentPrestigeMultiplier;
 
     if (typeof savedGame.hasUpg1 !== "undefined") hasUpgrade1 = savedGame.hasUpg1;
     if (typeof savedGame.hasUpg2 !== "undefined") hasUpgrade2 = savedGame.hasUpg2;
@@ -168,22 +168,22 @@ function buyPermanentUpgrade(id, tokenCost) {
   if (id === 1 && !hasPermanent1) {
     epsteinTokens -= tokenCost;
     hasPermanent1 = true;
-    permanentClickBonus += 2;
+    permanentClickMultiplier *= 3; // x3 click
   }
   if (id === 2 && !hasPermanent2) {
     epsteinTokens -= tokenCost;
     hasPermanent2 = true;
-    permanentBpsBonus += 15;
+    permanentBpsMultiplier *= 3; // x3 bps
   }
   if (id === 3 && !hasPermanent3) {
     epsteinTokens -= tokenCost;
     hasPermanent3 = true;
-    permanentPrestigeBonus += 1;
+    permanentPrestigeMultiplier *= 3; // x3 prestige
   }
   if (id === 4 && !hasPermanent4) {
     epsteinTokens -= tokenCost;
     hasPermanent4 = true;
-    permanentBpsBonus += 30;
+    permanentBpsMultiplier *= 3; // x3 bps
   }
 
   updateDisplay();
@@ -207,21 +207,20 @@ function spinWheel() {
   }
 
   let roll = Math.random();
-  let targetAngle; let resultCallback;
+  let targetAngle;
 
   if (roll < 0.40) {
-    targetAngle = Math.floor(Math.random() * 130) + 5;
-    resultCallback = () => alert("Sfortuna! Hai perso i la robba buona!😭 Stai attento agli sbirri!");
+    // Rosso: sfortuna (0-144°)
+    targetAngle = Math.floor(Math.random() * 140) + 2;
   } else if (roll < 0.75) {
-    targetAngle = Math.floor(Math.random() * 110) + 150;
-    let vincita = mysteryCost * 3;
-    resultCallback = () => { score += vincita; alert("Vittoria! Hai triplicato la robba spesa! (+" + vincita + ") "); };
+    // Blu: triplica la robba (144-270°)
+    targetAngle = Math.floor(Math.random() * 120) + 150;
   } else if (roll < 0.95) {
-    targetAngle = Math.floor(Math.random() * 60) + 275;
-    resultCallback = () => { clickPower += 25; alert("Crazy! Base per click +25! 🧤"); };
+    // Verde: +25 click (270-342°)
+    targetAngle = Math.floor(Math.random() * 60) + 280;
   } else {
-    targetAngle = Math.floor(Math.random() * 10) + 345;
-    resultCallback = () => { autoClickBPS += 150; alert("🎰 JACKPOT! Produzione Base +150 W/s! 🏭✨"); };
+    // Oro: jackpot +150 BPS (342-360°)
+    targetAngle = Math.floor(Math.random() * 16) + 344;
   }
 
   try {
@@ -237,7 +236,38 @@ function spinWheel() {
 
     setTimeout(() => {
       try {
-        if (typeof resultCallback === 'function') resultCallback();
+        const finalAngle = (wheelRotation % 360 + 360) % 360;
+        let resultMessage = "";
+        let resultClass = "";
+
+        if (finalAngle < 144) {
+          resultMessage = "Sfortuna! Niente, prova ancora.";
+          resultClass = "fail";
+          alert("Sfortuna! Hai perso la robba buona!😭 Stai attento agli sbirri!");
+        } else if (finalAngle < 270) {
+          let vincita = mysteryCost * 3;
+          resultMessage = `Vittoria! Ricevi ${vincita} grammi.`;
+          resultClass = "success";
+          score += vincita;
+          alert("Vittoria! Hai triplicato la robba spesa! (" + vincita + ")");
+        } else if (finalAngle < 342) {
+          resultMessage = "Crazy! +25 click base.";
+          resultClass = "warning";
+          clickPower += 25;
+          alert("Crazy! Base per click +25! 🧤");
+        } else {
+          resultMessage = "🎰 JACKPOT! +150 W/s!";
+          resultClass = "success";
+          autoClickBPS += 150;
+          alert("🎰 JACKPOT! Produzione Base +150 W/s! 🏭✨");
+        }
+
+        const wheelResultEl = document.getElementById('wheel-result');
+        if (wheelResultEl) {
+          wheelResultEl.textContent = resultMessage;
+          wheelResultEl.className = 'wheel-result ' + resultClass;
+        }
+
         mysteryCost = Math.floor(mysteryCost * 1.2);
       } catch (innerErr) {
         console.error('Errore in resultCallback ruota:', innerErr);
@@ -321,10 +351,10 @@ function updateDisplay() {
     }
   }
 
-  setPermanentBtnState(document.getElementById('btn-perm1'), hasPermanent1, 5, "+2 Click per clic");
-  setPermanentBtnState(document.getElementById('btn-perm2'), hasPermanent2, 10, "+15 g/s");
-  setPermanentBtnState(document.getElementById('btn-perm3'), hasPermanent3, 15, "+1x Prestige");
-  setPermanentBtnState(document.getElementById('btn-perm4'), hasPermanent4, 25, "+30 g/s");
+  setPermanentBtnState(document.getElementById('btn-perm1'), hasPermanent1, 5, "Click x3");
+  setPermanentBtnState(document.getElementById('btn-perm2'), hasPermanent2, 10, "BPS x3");
+  setPermanentBtnState(document.getElementById('btn-perm3'), hasPermanent3, 15, "Prestigio x3");
+  setPermanentBtnState(document.getElementById('btn-perm4'), hasPermanent4, 25, "BPS x3");
 }
 
 // INIZIALIZZAZIONE
