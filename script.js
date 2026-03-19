@@ -192,7 +192,19 @@ function buyPermanentUpgrade(id, tokenCost) {
 
 function spinWheel() {
   if (isSpinning || score < mysteryCost) return;
-  score -= mysteryCost; isSpinning = true; updateDisplay(); saveGame();
+
+  score -= mysteryCost;
+  isSpinning = true;
+  updateDisplay();
+  saveGame();
+
+  let wheelEl = document.getElementById('wheel');
+  if (!wheelEl) {
+    console.error("Ruota non trovata: id='wheel'");
+    isSpinning = false;
+    updateDisplay();
+    return;
+  }
 
   let roll = Math.random();
   let targetAngle; let resultCallback;
@@ -201,7 +213,8 @@ function spinWheel() {
     targetAngle = Math.floor(Math.random() * 130) + 5;
     resultCallback = () => alert("Sfortuna! Hai perso i la robba buona!😭 Stai attento agli sbirri!");
   } else if (roll < 0.75) {
-    targetAngle = Math.floor(Math.random() * 110) + 150; let vincita = mysteryCost * 3;
+    targetAngle = Math.floor(Math.random() * 110) + 150;
+    let vincita = mysteryCost * 3;
     resultCallback = () => { score += vincita; alert("Vittoria! Hai triplicato la robba spesa! (+" + vincita + ") "); };
   } else if (roll < 0.95) {
     targetAngle = Math.floor(Math.random() * 60) + 275;
@@ -211,14 +224,35 @@ function spinWheel() {
     resultCallback = () => { autoClickBPS += 150; alert("🎰 JACKPOT! Produzione Base +150 W/s! 🏭✨"); };
   }
 
-  let spins = 5; let extraRotation = 360 - targetAngle; let currentMod = wheelRotation % 360;
-  wheelRotation += (360 * spins) + (extraRotation - currentMod);
-  document.getElementById('wheel').style.transform = `rotate(${wheelRotation}deg)`;
+  try {
+    let spins = 5;
+    let currentMod = (wheelRotation % 360 + 360) % 360; // 0..359
+    let targetMod = targetAngle;
+    let delta = ((targetMod - currentMod + 360) % 360) + (360 * spins);
+    wheelRotation += delta;
 
-  setTimeout(() => {
-    resultCallback(); mysteryCost = Math.floor(mysteryCost * 1.2);
-    isSpinning = false; updateDisplay(); saveGame();
-  }, 4000);
+    // Force layout and then animate
+    void wheelEl.offsetWidth;
+    wheelEl.style.transform = `rotate(${wheelRotation}deg)`;
+
+    setTimeout(() => {
+      try {
+        if (typeof resultCallback === 'function') resultCallback();
+        mysteryCost = Math.floor(mysteryCost * 1.2);
+      } catch (innerErr) {
+        console.error('Errore in resultCallback ruota:', innerErr);
+      } finally {
+        isSpinning = false;
+        updateDisplay();
+        saveGame();
+      }
+    }, 4000);
+  } catch (err) {
+    console.error('Errore durante spinWheel:', err);
+    isSpinning = false;
+    updateDisplay();
+    saveGame();
+  }
 }
 
 function doPrestige() {
