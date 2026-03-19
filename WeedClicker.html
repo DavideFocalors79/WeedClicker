@@ -10,12 +10,14 @@
 
 <div id="top-bar">
     <div class="score-board">Grammi: <span id="score">0</span></div>
+    <div class="token-stats">🔷 Epstein Token: <span id="epstein-token-display">0</span></div>
     <div class="prestige-stats">✨ Moltiplicatore Prestigio: x<span id="prestige-display">1</span> ✨</div>
 </div>
 
 <div id="nav-bar">
     <button id="nav-forno" class="nav-btn active" onclick="switchPage('forno')">Il Giro</button>
     <button id="nav-upgrades" class="nav-btn" onclick="switchPage('upgrades')">Roba Buona</button>
+    <button id="nav-permanent" class="nav-btn" onclick="switchPage('permanent')">L'isola</button>
     <button id="nav-casino" class="nav-btn" onclick="switchPage('casino')">🎡 Crazy Time!</button>
 </div>
 
@@ -71,6 +73,19 @@
         </div>
     </div>
 
+    <div id="page-permanent" class="page">
+        <h2>Potenziamenti Permanenti</h2>
+        <div class="info-box">
+            Qui spendi gli Epstein Token per bonus permanenti che non si resetteranno con il prestigio.
+        </div>
+        <div class="shop">
+            <button id="btn-perm1" class="upg-btn" onclick="buyPermanentUpgrade(1, 5)">🔹 +2 Click per clic (5 Token)</button>
+            <button id="btn-perm2" class="upg-btn" onclick="buyPermanentUpgrade(2, 10)">🔹 +15 g/s (10 Token)</button>
+            <button id="btn-perm3" class="upg-btn" onclick="buyPermanentUpgrade(3, 15)">🔹 +1x Moltiplicatore Prestigio (15 Token)</button>
+            <button id="btn-perm4" class="upg-btn" onclick="buyPermanentUpgrade(4, 25)">🔹 +30 g/s addizionali (25 Token)</button>
+        </div>
+    </div>
+
     <div id="page-casino" class="page">
          <h2>Il Crazy Time!</h2>
 
@@ -100,7 +115,6 @@
     <button id="btn-reset" onclick="resetGame()">🗑️ Azzera Dati</button>
 </div>
 
-<div id="save-notification">Salvataggio completato!</div>
 
 <script src="script.js"></script>
 </body>

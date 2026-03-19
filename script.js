@@ -3,6 +3,7 @@ let score = 0;
 let clickPower = 1;
 let autoClickBPS = 0;
 let prestigeMultiplier = 1;
+let epsteinTokens = 0;
 
 let clickUpgradeCost = 10;
 let autoClickerCost = 50;
@@ -16,6 +17,15 @@ let hasUpgrade1 = false; // Click x2
 let hasUpgrade2 = false; // BPS x2
 let hasUpgrade3 = false; // Click x3
 let hasUpgrade4 = false; // BPS x3
+
+// Permanenti (non resettano al prestige)
+let hasPermanent1 = false; // +1 click
+let hasPermanent2 = false; // +5 bps
+let hasPermanent3 = false; // +0.5 prestige multiplier
+let hasPermanent4 = false; // +10 bps
+let permanentClickBonus = 0;
+let permanentBpsBonus = 0;
+let permanentPrestigeBonus = 0;
 
 let wheelRotation = 0;
 let isSpinning = false;
@@ -45,25 +55,29 @@ function getEffClick() {
   let multiplier = 1;
   if (hasUpgrade1) multiplier *= 2;
   if (hasUpgrade3) multiplier *= 3;
-  return clickPower * multiplier * prestigeMultiplier;
+  const effectivePrestige = prestigeMultiplier + permanentPrestigeBonus;
+  return (clickPower + permanentClickBonus) * multiplier * effectivePrestige;
 }
 
 function getEffBps() {
   let multiplier = 1;
   if (hasUpgrade2) multiplier *= 2;
   if (hasUpgrade4) multiplier *= 3;
-  return autoClickBPS * multiplier * prestigeMultiplier;
+  const effectivePrestige = prestigeMultiplier + permanentPrestigeBonus;
+  return (autoClickBPS + permanentBpsBonus) * multiplier * effectivePrestige;
 }
 
 // --- FUNZIONI DI SALVATAGGIO ---
 function saveGame() {
   const gameSave = {
     score: score, clickPower: clickPower, autoClickBPS: autoClickBPS,
-    prestigeMultiplier: prestigeMultiplier, clickUpgradeCost: clickUpgradeCost,
+    prestigeMultiplier: prestigeMultiplier, epsteinTokens: epsteinTokens, clickUpgradeCost: clickUpgradeCost,
     autoClickerCost: autoClickerCost, dryCost: dryCost,
     frozenCost: frozenCost, mysteryCost: mysteryCost,
     prestigeThreshold: prestigeThreshold,
-    hasUpg1: hasUpgrade1, hasUpg2: hasUpgrade2, hasUpg3: hasUpgrade3, hasUpg4: hasUpgrade4
+    hasUpg1: hasUpgrade1, hasUpg2: hasUpgrade2, hasUpg3: hasUpgrade3, hasUpg4: hasUpgrade4,
+    hasPermanent1: hasPermanent1, hasPermanent2: hasPermanent2, hasPermanent3: hasPermanent3, hasPermanent4: hasPermanent4,
+    permanentClickBonus: permanentClickBonus, permanentBpsBonus: permanentBpsBonus, permanentPrestigeBonus: permanentPrestigeBonus
   };
   localStorage.setItem("IlGiroSave", JSON.stringify(gameSave));
   saveNotification.style.opacity = 1;
@@ -83,6 +97,14 @@ function loadGame() {
     if (typeof savedGame.frozenCost !== "undefined") frozenCost = savedGame.frozenCost;
     if (typeof savedGame.mysteryCost !== "undefined") mysteryCost = savedGame.mysteryCost;
     if (typeof savedGame.prestigeThreshold !== "undefined") prestigeThreshold = savedGame.prestigeThreshold;
+    if (typeof savedGame.epsteinTokens !== "undefined") epsteinTokens = savedGame.epsteinTokens;
+    if (typeof savedGame.hasPermanent1 !== "undefined") hasPermanent1 = savedGame.hasPermanent1;
+    if (typeof savedGame.hasPermanent2 !== "undefined") hasPermanent2 = savedGame.hasPermanent2;
+    if (typeof savedGame.hasPermanent3 !== "undefined") hasPermanent3 = savedGame.hasPermanent3;
+    if (typeof savedGame.hasPermanent4 !== "undefined") hasPermanent4 = savedGame.hasPermanent4;
+    if (typeof savedGame.permanentClickBonus !== "undefined") permanentClickBonus = savedGame.permanentClickBonus;
+    if (typeof savedGame.permanentBpsBonus !== "undefined") permanentBpsBonus = savedGame.permanentBpsBonus;
+    if (typeof savedGame.permanentPrestigeBonus !== "undefined") permanentPrestigeBonus = savedGame.permanentPrestigeBonus;
 
     if (typeof savedGame.hasUpg1 !== "undefined") hasUpgrade1 = savedGame.hasUpg1;
     if (typeof savedGame.hasUpg2 !== "undefined") hasUpgrade2 = savedGame.hasUpg2;
@@ -140,6 +162,34 @@ function buyUpgrade(id, cost) {
   }
 }
 
+function buyPermanentUpgrade(id, tokenCost) {
+  if (epsteinTokens < tokenCost) return;
+
+  if (id === 1 && !hasPermanent1) {
+    epsteinTokens -= tokenCost;
+    hasPermanent1 = true;
+    permanentClickBonus += 2;
+  }
+  if (id === 2 && !hasPermanent2) {
+    epsteinTokens -= tokenCost;
+    hasPermanent2 = true;
+    permanentBpsBonus += 15;
+  }
+  if (id === 3 && !hasPermanent3) {
+    epsteinTokens -= tokenCost;
+    hasPermanent3 = true;
+    permanentPrestigeBonus += 1;
+  }
+  if (id === 4 && !hasPermanent4) {
+    epsteinTokens -= tokenCost;
+    hasPermanent4 = true;
+    permanentBpsBonus += 30;
+  }
+
+  updateDisplay();
+  saveGame();
+}
+
 function spinWheel() {
   if (isSpinning || score < mysteryCost) return;
   score -= mysteryCost; isSpinning = true; updateDisplay(); saveGame();
@@ -174,13 +224,14 @@ function spinWheel() {
 function doPrestige() {
   if (score >= prestigeThreshold) {
     prestigeMultiplier += 1;
+    epsteinTokens += 1;
     prestigeThreshold = Math.floor(prestigeThreshold * 3);
     score = 0; clickPower = 1; autoClickBPS = 0;
     clickUpgradeCost = 10; autoClickerCost = 50; dryCost = 500; frozenCost = 1500; mysteryCost = 1000;
 
     hasUpgrade1 = false; hasUpgrade2 = false; hasUpgrade3 = false; hasUpgrade4 = false;
 
-    alert("Hai fatto Prestigio! Ora il tuo moltiplicatore è x" + prestigeMultiplier);
+    alert("Hai fatto Prestigio! Ora il tuo moltiplicatore è x" + prestigeMultiplier + " e hai guadagnato 1 Epstein Token! 🔷");
     updateDisplay(); saveGame(); switchPage('forno');
   }
 }
@@ -197,6 +248,7 @@ function updateDisplay() {
    document.getElementById('frozen-cost').textContent = frozenCost;
   mysteryCostDisplay.textContent = mysteryCost;
   prestigeDisplay.textContent = prestigeMultiplier;
+  document.getElementById('epstein-token-display').textContent = epsteinTokens;
   prestigeCostDisplay.textContent = prestigeThreshold;
 
   document.getElementById('btn-click-upgrade').disabled = score < clickUpgradeCost || isSpinning;
@@ -222,6 +274,23 @@ function updateDisplay() {
   setUpgBtnState(btnUpg2, hasUpgrade2, 10000, "✨ Cocaina (WPS x2)");
   setUpgBtnState(btnUpg3, hasUpgrade3, 50000, "🍫 Robba buona (Click x3)");
   setUpgBtnState(btnUpg4, hasUpgrade4, 100000, "🔥 ts lit as fuck (WPS x3)");
+
+  function setPermanentBtnState(btn, hasBought, cost, title) {
+    if (hasBought) {
+      btn.textContent = `✅ ${title} (Acquistato)`;
+      btn.classList.add('bought');
+      btn.disabled = true;
+    } else {
+      btn.textContent = `${title} - ${cost} Token`;
+      btn.classList.remove('bought');
+      btn.disabled = epsteinTokens < cost || isSpinning;
+    }
+  }
+
+  setPermanentBtnState(document.getElementById('btn-perm1'), hasPermanent1, 5, "+2 Click per clic");
+  setPermanentBtnState(document.getElementById('btn-perm2'), hasPermanent2, 10, "+15 g/s");
+  setPermanentBtnState(document.getElementById('btn-perm3'), hasPermanent3, 15, "+1x Prestige");
+  setPermanentBtnState(document.getElementById('btn-perm4'), hasPermanent4, 25, "+30 g/s");
 }
 
 // INIZIALIZZAZIONE
