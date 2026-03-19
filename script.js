@@ -282,7 +282,7 @@ function spinWheel() {
 function doPrestige() {
   if (score >= prestigeThreshold) {
     prestigeMultiplier += 1;
-    epsteinTokens += 1;
+    epsteinTokens += 2;
     prestigeThreshold = Math.floor(prestigeThreshold * 1.5);
     score = 0; clickPower = 1; autoClickBPS = 0;
     clickUpgradeCost = 10; autoClickerCost = 50; dryCost = 500; frozenCost = 1500; mysteryCost = 1000;
