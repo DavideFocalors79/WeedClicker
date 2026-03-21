@@ -14,8 +14,9 @@
         <div class="token-stats">🔷 Token: <span id="epstein-token-display">0</span></div>
         <div class="btc-topbar">₿ BTC: <span id="btc-topbar-display">0.000</span></div>
     </div>
-    <div class="prestige-stats">✨ Moltiplicatore Prestigio: x<span id="prestige-display">1</span> ✨</div>
-    <div class="global-mult">Mult Click: <span id="global-click-mult">1</span>x | Mult BPS: <span id="global-bps-mult">1</span>x</div>
+    <div class="prestige-stats">✨ Molt. Prestigio: x<span id="prestige-display">1</span> | Molt. Permanente: x<span id="perm-mult-display">1</span> ✨</div>
+    <div class="global-mult">Mult Click Totale: <span id="global-click-mult">1</span>x | Mult BPS Totale: <span id="global-bps-mult">1</span>x</div>
+    <div class="global-mult" style="color:#f9a825;">🌟 Punti Aura: <span id="aura-points-display">0</span> | Aura x<span id="aura-mult-display">1</span> | Prestige fatti: <span id="aura-count-display">0</span></div>
 </div>
 
 <div id="nav-bar">
@@ -27,6 +28,7 @@
     <button id="nav-blackjack" class="nav-btn" onclick="switchPage('blackjack')">🃏 Blackjack</button>
     <button id="nav-bitcoin" class="nav-btn" onclick="switchPage('bitcoin')">₿ Bitcoin</button>
     <button id="nav-aviator" class="nav-btn" onclick="switchPage('aviator')">✈️ Aviator</button>
+    <button id="nav-aura" class="nav-btn" onclick="switchPage('aura')" style="background:linear-gradient(135deg,#1a0a2e,#f9a825);color:#fff;border-color:#f9a825;">🌟 Aura</button>
 </div>
 
 <div id="game-container">
@@ -193,7 +195,9 @@
     <div id="page-bitcoin" class="page">
         <h2>₿ Bitcoin Market</h2>
         <div class="info-box">
-            Compra Miner per accumulare Bitcoin. Vendi i tuoi BTC quando il prezzo è alto per ottenere Epstein Token! (1 BTC = 1 Token al prezzo base, moltiplicato per il prezzo corrente)
+            Compra Miner per accumulare Bitcoin. Vendi i tuoi BTC per ottenere Epstein Token!<br>
+            <strong>1 BTC = 10 Token</strong> al prezzo base × moltiplicatore di mercato attuale.<br>
+            Il prezzo oscilla continuamente: vendi quando è alto! 📈
         </div>
 
         <div class="btc-stats">
@@ -276,6 +280,51 @@
 
         <div id="av-toast" style="display:none;background:#1a1a2e;border:2px solid #00e676;border-radius:10px;padding:10px 20px;font-family:monospace;font-size:15px;font-weight:700;color:#00e676;margin-top:10px;text-align:center;"></div>
     </div>
+
+    <!-- AURA PRESTIGE PAGE -->
+    <div id="page-aura" class="page">
+        <h2 style="color:#f9a825;">🌟 Aura Prestige</h2>
+        <div class="info-box" style="background:#1a0a2e;color:#e0b0ff;border:1px solid #8a2be2;">
+            L'Aura Prestige <strong style="color:#f9a825;">azzera tutto</strong> — grammi, token, BTC, upgrade permanenti, moltiplicatori — e ti dona <strong style="color:#f9a825;">+10 Punti Aura</strong> e un <strong style="color:#00e676;">moltiplicatore base x10</strong> permanente su tutto. Ideale dopo il Prestigio 50+.
+        </div>
+
+        <div style="background:#1a0a2e;border:2px solid #f9a825;border-radius:14px;padding:18px;width:100%;box-sizing:border-box;margin-bottom:16px;">
+            <div style="color:#f9a825;font-size:18px;font-weight:900;margin-bottom:12px;letter-spacing:2px;">📊 IL TUO STATUS AURA</div>
+            <div style="color:#e0b0ff;font-size:15px;margin:6px 0;">🌟 Punti Aura: <strong style="color:#f9a825;" id="aura-pts-page">0</strong></div>
+            <div style="color:#e0b0ff;font-size:15px;margin:6px 0;">🔁 Aura Prestige effettuati: <strong style="color:#f9a825;" id="aura-cnt-page">0</strong></div>
+            <div style="color:#e0b0ff;font-size:15px;margin:6px 0;">⚡ Moltiplicatore Aura attuale: <strong style="color:#00e676;" id="aura-mlt-page">x1</strong></div>
+        </div>
+
+        <div style="background:#0d1b2a;border:2px solid #8a2be2;border-radius:14px;padding:18px;width:100%;box-sizing:border-box;margin-bottom:16px;">
+            <div style="color:#8a2be2;font-size:16px;font-weight:900;margin-bottom:14px;letter-spacing:2px;">💸 COSTO AURA PRESTIGE</div>
+            <div style="color:#ccc;font-size:14px;margin:8px 0;">🌿 Grammi richiesti: <strong style="color:#4CAF50;">500.000.000</strong></div>
+            <div style="color:#ccc;font-size:14px;margin:8px 0;">🔷 Epstein Token richiesti: <strong style="color:#90caf9;">1.000</strong></div>
+            <div style="color:#ccc;font-size:14px;margin:8px 0;">₿ Bitcoin richiesti: <strong style="color:#f9a825;">50 BTC</strong></div>
+        </div>
+
+        <div style="background:#1a0a0a;border:2px solid #ff4444;border-radius:14px;padding:14px;width:100%;box-sizing:border-box;margin-bottom:20px;">
+            <div style="color:#ff4444;font-weight:bold;margin-bottom:8px;">⚠️ COSA PERDI</div>
+            <div style="color:#aaa;font-size:13px;line-height:1.8;">
+                Grammi • Click Power • BPS • Upgrade temporanei<br>
+                Upgrade permanenti • Token • BTC • Miner<br>
+                Battle Pass • Moltiplicatore Prestigio
+            </div>
+        </div>
+
+        <div style="background:#0a2e0a;border:2px solid #00e676;border-radius:14px;padding:14px;width:100%;box-sizing:border-box;margin-bottom:20px;">
+            <div style="color:#00e676;font-weight:bold;margin-bottom:8px;">✅ COSA GUADAGNI</div>
+            <div style="color:#aaa;font-size:13px;line-height:1.8;">
+                +10 Punti Aura permanenti<br>
+                Moltiplicatore base x10 su tutto (cumulativo)<br>
+                Fama eterna nel Giro
+            </div>
+        </div>
+
+        <button id="btn-aura-prestige" onclick="doAuraPrestige()" disabled
+            style="background:linear-gradient(135deg,#8a2be2,#f9a825);color:white;font-size:18px;font-weight:900;letter-spacing:2px;padding:18px;border-radius:12px;border:none;width:100%;cursor:pointer;box-shadow:0 0 30px rgba(249,168,37,0.4);">
+            🌟 ESEGUI AURA PRESTIGE
+        </button>
+        </div>
 
 </div>
 

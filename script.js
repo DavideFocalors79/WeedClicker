@@ -62,6 +62,14 @@ let permanentBtcMultiplier = 1;   // moltiplicatore produzione BTC
 let wheelRotation = 0;
 let isSpinning = false;
 
+// --- AURA PRESTIGE ---
+let auraPoints = 0;
+let auraPrestigeCount = 0;
+const AURA_COST_GRAMMI   = 500_000_000;  // 500 milioni di grammi
+const AURA_COST_TOKEN    = 1_000;        // 1.000 Epstein Token
+const AURA_COST_BTC      = 50;           // 50 BTC
+let auraBaseMultiplier   = 1;            // parte da 1, ogni aura lo moltiplica x10
+
 // --- COLLEGAMENTI HTML ---
 const scoreDisplay = document.getElementById('score');
 const effClickPowerDisplay = document.getElementById('eff-click-power');
@@ -90,7 +98,7 @@ function getEffClick() {
   if (hasUpgrade5) multiplier *= 4;
   if (hasUpgrade7) multiplier *= 5;
   const effectivePrestige = prestigeMultiplier * permanentPrestigeMultiplier;
-  return clickPower * multiplier * effectivePrestige * permanentClickMultiplier;
+  return clickPower * multiplier * effectivePrestige * permanentClickMultiplier * auraBaseMultiplier;
 }
 
 function getEffBps() {
@@ -100,7 +108,7 @@ function getEffBps() {
   if (hasUpgrade6) multiplier *= 4;
   if (hasUpgrade8) multiplier *= 5;
   const effectivePrestige = prestigeMultiplier * permanentPrestigeMultiplier;
-  return autoClickBPS * multiplier * effectivePrestige * permanentBpsMultiplier;
+  return autoClickBPS * multiplier * effectivePrestige * permanentBpsMultiplier * auraBaseMultiplier;
 }
 
 // --- FUNZIONI DI SALVATAGGIO ---
@@ -121,7 +129,8 @@ function saveGame() {
     spacciatoreCount: spacciatoreCount, spacciatoreCurrentCost: spacciatoreCurrentCost,
     piantagioneCount: piantagioneCount, piantagioneCurrentCost: piantagioneCurrentCost,
     laboratorioCount: laboratorioCount, laboratorioCurrentCost: laboratorioCurrentCost,
-    btcBalance: btcBalance, btcMiners: btcMiners, btcMinerCost: btcMinerCost
+    btcBalance: btcBalance, btcMiners: btcMiners, btcMinerCost: btcMinerCost,
+    auraPoints: auraPoints, auraPrestigeCount: auraPrestigeCount, auraBaseMultiplier: auraBaseMultiplier
   };
   localStorage.setItem("IlGiroSave", JSON.stringify(gameSave));
   saveNotification.style.opacity = 1;
@@ -178,6 +187,9 @@ function loadGame() {
     if (typeof savedGame.btcBalance !== "undefined") btcBalance = savedGame.btcBalance;
     if (typeof savedGame.btcMiners !== "undefined") btcMiners = savedGame.btcMiners;
     if (typeof savedGame.btcMinerCost !== "undefined") btcMinerCost = savedGame.btcMinerCost;
+    if (typeof savedGame.auraPoints !== "undefined") auraPoints = savedGame.auraPoints;
+    if (typeof savedGame.auraPrestigeCount !== "undefined") auraPrestigeCount = savedGame.auraPrestigeCount;
+    if (typeof savedGame.auraBaseMultiplier !== "undefined") auraBaseMultiplier = savedGame.auraBaseMultiplier;
   }
 }
 
@@ -428,6 +440,68 @@ function doPrestige() {
   }
 }
 
+function doAuraPrestige() {
+  const needGrammi = AURA_COST_GRAMMI;
+  const needToken  = AURA_COST_TOKEN;
+  const needBtc    = AURA_COST_BTC;
+
+  if (score < needGrammi) { alert(`❌ Ti mancano i Grammi! Servono ${needGrammi.toLocaleString()} grammi.`); return; }
+  if (epsteinTokens < needToken) { alert(`❌ Ti mancano gli Epstein Token! Servono ${needToken.toLocaleString()} Token.`); return; }
+  if (btcBalance < needBtc) { alert(`❌ Ti mancano i Bitcoin! Servono ${needBtc} BTC.`); return; }
+
+  if (!confirm(`⚠️ AURA PRESTIGE ⚠️\n\nQuesta azione azzera TUTTO:\n• Grammi, click, BPS\n• Tutti gli upgrade (anche permanenti)\n• Token, BTC, Miner\n• Moltiplicatore Prestigio\n\nIn cambio ricevi:\n• +10 Punti Aura\n• Moltiplicatore base x10 (permanente)\n\nSei sicuro?`)) return;
+
+  // ── RESET COMPLETO ──
+  score = 0; clickPower = 1; autoClickBPS = 0;
+  clickUpgradeCost = 10; autoClickerCost = 50; dryCost = 500; frozenCost = 1500; mysteryCost = 1000;
+  prestigeThreshold = 10000; prestigeMultiplier = 1;
+
+  hasUpgrade1 = false; hasUpgrade2 = false; hasUpgrade3 = false; hasUpgrade4 = false;
+  hasUpgrade5 = false; hasUpgrade6 = false; hasUpgrade7 = false; hasUpgrade8 = false;
+
+  hasPermanent1 = false; hasPermanent2 = false; hasPermanent3 = false; hasPermanent4 = false;
+  hasPermanent5 = false; hasPermanent6 = false; hasPermanent7 = false; hasPermanent8 = false;
+  hasPermanent9 = false; hasPermanent10 = false; hasPermanent11 = false; hasPermanent12 = false;
+  permanentClickMultiplier = 1; permanentBpsMultiplier = 1; permanentPrestigeMultiplier = 1;
+  permanentTokensPerSecond = 1; permanentBtcMultiplier = 1;
+
+  spacciatoreCount = 0; spacciatoreCurrentCost = spacciatoreBaseCost;
+  piantagioneCount = 0; piantagioneCurrentCost = piantagioneBaseCost;
+  laboratorioCount = 0; laboratorioCurrentCost = laboratorioBaseCost;
+
+  epsteinTokens = 0; battlePassLevel = 0;
+  btcBalance = 0; btcMiners = 0; btcMinerCost = 1;
+
+  // ── RICOMPENSA AURA ──
+  auraPrestigeCount++;
+  auraPoints += 10;
+  auraBaseMultiplier *= 10;
+
+  alert(`✨ AURA PRESTIGE COMPLETATO! ✨\n\nHai ora ${auraPoints} Punti Aura!\nMoltiplicatore base: x${auraBaseMultiplier.toLocaleString()}\n\nRicomincia da zero… ma 10 volte più forte!`);
+  updateDisplay(); updateBtcDisplay(); updateAuraDisplay(); saveGame(); switchPage('forno');
+}
+
+function updateAuraDisplay() {
+  const el = document.getElementById('aura-points-display');
+  if (el) el.textContent = auraPoints;
+  const el2 = document.getElementById('aura-count-display');
+  if (el2) el2.textContent = auraPrestigeCount;
+  const el3 = document.getElementById('aura-mult-display');
+  if (el3) el3.textContent = auraBaseMultiplier.toLocaleString();
+  // page elements
+  const elP = document.getElementById('aura-pts-page');
+  if (elP) elP.textContent = auraPoints;
+  const elC = document.getElementById('aura-cnt-page');
+  if (elC) elC.textContent = auraPrestigeCount;
+  const elM = document.getElementById('aura-mlt-page');
+  if (elM) elM.textContent = 'x' + auraBaseMultiplier.toLocaleString();
+  const btn = document.getElementById('btn-aura-prestige');
+  if (btn) {
+    const canAfford = score >= AURA_COST_GRAMMI && epsteinTokens >= AURA_COST_TOKEN && btcBalance >= AURA_COST_BTC;
+    btn.disabled = !canAfford;
+  }
+}
+
 function createDeck() {
   const suits = ['♥', '♦', '♣', '♠'];
   const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
@@ -546,37 +620,67 @@ function endGame(message) {
   updateDisplay();
 }
 
+// --- NOTAZIONE SCIENTIFICA ---
+function formatNum(n) {
+  if (n === undefined || n === null || isNaN(n)) return '0';
+  n = Math.floor(n);
+  if (n < 1_000_000) return n.toLocaleString('it-IT');
+  const suffixes = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc'];
+  const tier = Math.floor(Math.log10(Math.abs(n)) / 3);
+  if (tier >= suffixes.length) {
+    // vera notazione scientifica per numeri enormi
+    const exp = Math.floor(Math.log10(Math.abs(n)));
+    const mantissa = (n / Math.pow(10, exp)).toFixed(2);
+    return `${mantissa}e${exp}`;
+  }
+  const scaled = n / Math.pow(10, tier * 3);
+  return scaled.toFixed(2) + suffixes[tier];
+}
+
 function updateDisplay() {
-  scoreDisplay.textContent = Math.floor(score);
+  scoreDisplay.textContent = formatNum(score);
 
-  effClickPowerDisplay.textContent = Math.floor(getEffClick());
-  effBpsDisplay.textContent = Math.floor(getEffBps());
+  effClickPowerDisplay.textContent = formatNum(getEffClick());
+  effBpsDisplay.textContent = formatNum(getEffBps());
 
-  // Calcola moltiplicatori globali
+  // Calcola moltiplicatori globali COMPLETI (tutti i fattori)
   let clickMult = 1;
   if (hasUpgrade1) clickMult *= 2;
   if (hasUpgrade3) clickMult *= 3;
-  clickMult *= prestigeMultiplier * permanentPrestigeMultiplier * permanentClickMultiplier;
-  document.getElementById('global-click-mult').textContent = clickMult.toFixed(2);
+  if (hasUpgrade5) clickMult *= 4;
+  if (hasUpgrade7) clickMult *= 5;
+  clickMult *= prestigeMultiplier * permanentPrestigeMultiplier * permanentClickMultiplier * auraBaseMultiplier;
+  document.getElementById('global-click-mult').textContent = formatNum(Math.floor(clickMult));
 
   let bpsMult = 1;
   if (hasUpgrade2) bpsMult *= 2;
   if (hasUpgrade4) bpsMult *= 3;
-  bpsMult *= prestigeMultiplier * permanentPrestigeMultiplier * permanentBpsMultiplier;
-  document.getElementById('global-bps-mult').textContent = bpsMult.toFixed(2);
+  if (hasUpgrade6) bpsMult *= 4;
+  if (hasUpgrade8) bpsMult *= 5;
+  bpsMult *= prestigeMultiplier * permanentPrestigeMultiplier * permanentBpsMultiplier * auraBaseMultiplier;
+  document.getElementById('global-bps-mult').textContent = formatNum(Math.floor(bpsMult));
 
-  document.getElementById('click-cost').textContent = clickUpgradeCost;
-  document.getElementById('auto-cost').textContent = autoClickerCost;
-  document.getElementById('dry-cost').textContent = dryCost;
-  document.getElementById('frozen-cost').textContent = frozenCost;
-  document.getElementById('spacciatore-cost').textContent = spacciatoreCurrentCost;
-  document.getElementById('piantagione-cost').textContent = piantagioneCurrentCost;
-  document.getElementById('laboratorio-cost').textContent = laboratorioCurrentCost;
-  mysteryCostDisplay.textContent = mysteryCost;
-  prestigeDisplay.textContent = prestigeMultiplier;
-  document.getElementById('epstein-token-display').textContent = epsteinTokens;
-  document.getElementById('bj-tokens').textContent = epsteinTokens;
-  prestigeCostDisplay.textContent = prestigeThreshold;
+  // Moltiplicatore permanente totale (per la top bar)
+  const permMult = permanentPrestigeMultiplier * permanentClickMultiplier * permanentBpsMultiplier * auraBaseMultiplier;
+  const permEl = document.getElementById('perm-mult-display');
+  if (permEl) permEl.textContent = formatNum(Math.floor(permMult));
+
+  document.getElementById('click-cost').textContent = formatNum(clickUpgradeCost);
+  document.getElementById('auto-cost').textContent = formatNum(autoClickerCost);
+  document.getElementById('dry-cost').textContent = formatNum(dryCost);
+  document.getElementById('frozen-cost').textContent = formatNum(frozenCost);
+  document.getElementById('spacciatore-cost').textContent = formatNum(spacciatoreCurrentCost);
+  document.getElementById('piantagione-cost').textContent = formatNum(piantagioneCurrentCost);
+  document.getElementById('laboratorio-cost').textContent = formatNum(laboratorioCurrentCost);
+  mysteryCostDisplay.textContent = formatNum(mysteryCost);
+  prestigeDisplay.textContent = formatNum(prestigeMultiplier);
+  document.getElementById('epstein-token-display').textContent = formatNum(epsteinTokens);
+  document.getElementById('bj-tokens').textContent = formatNum(epsteinTokens);
+  prestigeCostDisplay.textContent = formatNum(prestigeThreshold);
+
+  // BTC topbar
+  const btcTopbar = document.getElementById('btc-topbar-display');
+  if (btcTopbar) btcTopbar.textContent = btcBalance.toFixed(3);
 
   document.getElementById('btn-click-upgrade').disabled = score < clickUpgradeCost || isSpinning;
   document.getElementById('btn-auto-click').disabled = score < autoClickerCost || isSpinning;
@@ -588,17 +692,13 @@ function updateDisplay() {
   document.getElementById('btn-mystery').disabled = score < mysteryCost || isSpinning;
   document.getElementById('btn-prestige').disabled = score < prestigeThreshold || isSpinning;
 
-  // BTC topbar
-  const btcTopbar = document.getElementById('btc-topbar-display');
-  if (btcTopbar) btcTopbar.textContent = btcBalance.toFixed(3);
-
   function setUpgBtnState(btn, hasBought, cost, title) {
     if (hasBought) {
       btn.textContent = `✅ ${title} (Acquistato)`;
       btn.classList.add('bought');
       btn.disabled = true;
     } else {
-      btn.textContent = `${title} - ${cost}`;
+      btn.textContent = `${title} - ${formatNum(cost)}`;
       btn.classList.remove('bought');
       btn.disabled = score < cost || isSpinning;
     }
@@ -619,7 +719,7 @@ function updateDisplay() {
       btn.classList.add('bought');
       btn.disabled = true;
     } else {
-      btn.textContent = `${title} - ${cost} Token`;
+      btn.textContent = `${title} - ${formatNum(cost)} Token`;
       btn.classList.remove('bought');
       btn.disabled = epsteinTokens < cost || isSpinning;
     }
@@ -637,6 +737,8 @@ function updateDisplay() {
   setPermanentBtnState(document.getElementById('btn-perm10'), hasPermanent10, 90, "Walter White (BPS x8)");
   setPermanentBtnState(document.getElementById('btn-perm11'), hasPermanent11, 100, "₿ BTC Boost (Miner x2)");
   setPermanentBtnState(document.getElementById('btn-perm12'), hasPermanent12, 120, "🌌 Zanotti Sgravo Mode (Tutto x2)");
+
+  updateAuraDisplay();
 }
 
 function upgradeBattlePass() {
@@ -828,7 +930,7 @@ function buyBitcoinMiner() {
 
 function sellBitcoin() {
   if (btcBalance <= 0) return;
-  const tokens = Math.floor(btcBalance * btcPriceMultiplier);
+  const tokens = Math.floor(btcBalance * 10 * btcPriceMultiplier);
   epsteinTokens += tokens;
   btcBalance = 0;
   updateDisplay();
@@ -846,10 +948,10 @@ function updateBtcDisplay() {
   const last = btcPriceHistory[btcPriceHistory.length - 1];
   const prev = btcPriceHistory[btcPriceHistory.length - 2] || last;
   el('btc-price-arrow').textContent = last > prev ? '📈' : last < prev ? '📉' : '➡️';
-  const sellValue = Math.floor(btcBalance * btcPriceMultiplier);
-  el('btc-value-display').textContent = sellValue;
-  el('btc-sell-preview').textContent = sellValue;
-  el('btc-miner-cost').textContent = btcMinerCost;
+  const sellValue = Math.floor(btcBalance * 10 * btcPriceMultiplier);
+  el('btc-value-display').textContent = formatNum(sellValue);
+  el('btc-sell-preview').textContent = formatNum(sellValue);
+  el('btc-miner-cost').textContent = formatNum(btcMinerCost);
   const buyBtn = el('btn-buy-miner');
   if (buyBtn) buyBtn.disabled = epsteinTokens < btcMinerCost;
   const sellBtn = el('btn-sell-btc');
@@ -863,6 +965,7 @@ updateDisplay();
 updateBattlePassDisplay();
 initBtcChart();
 updateBtcDisplay();
+updateAuraDisplay();
 
 setInterval(function() {
   if (autoClickBPS > 0) {
