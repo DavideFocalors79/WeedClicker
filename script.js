@@ -1,9 +1,9 @@
 // --- VARIABILI DEL GIOCO ---
 let score = 0;
-let clickPower = 1;
+let clickPower = 100000000;
 let autoClickBPS = 0;
 let prestigeMultiplier = 1;
-let epsteinTokens = 0;
+let epsteinTokens = 11111110;
 let battlePassLevel = 0;
 
 // Blackjack variables
@@ -65,10 +65,10 @@ let isSpinning = false;
 // --- AURA PRESTIGE ---
 let auraPoints = 0;
 let auraPrestigeCount = 0;
-const AURA_COST_GRAMMI   = 500_000_000;  // 500 milioni di grammi
-const AURA_COST_TOKEN    = 1_000;        // 1.000 Epstein Token
-const AURA_COST_BTC      = 50;           // 50 BTC
-let auraBaseMultiplier   = 1;            // parte da 1, ogni aura lo moltiplica x10
+let auraCostGrammi = 500_000_000;   // raddoppia ogni aura
+let auraCostToken  = 1_000;         // raddoppia ogni aura
+let auraCostBtc    = 50;            // raddoppia ogni aura
+let auraBaseMultiplier = 1;         // x10 ogni aura
 
 // --- COLLEGAMENTI HTML ---
 const scoreDisplay = document.getElementById('score');
@@ -130,7 +130,8 @@ function saveGame() {
     piantagioneCount: piantagioneCount, piantagioneCurrentCost: piantagioneCurrentCost,
     laboratorioCount: laboratorioCount, laboratorioCurrentCost: laboratorioCurrentCost,
     btcBalance: btcBalance, btcMiners: btcMiners, btcMinerCost: btcMinerCost,
-    auraPoints: auraPoints, auraPrestigeCount: auraPrestigeCount, auraBaseMultiplier: auraBaseMultiplier
+    auraPoints: auraPoints, auraPrestigeCount: auraPrestigeCount, auraBaseMultiplier: auraBaseMultiplier,
+    auraCostGrammi: auraCostGrammi, auraCostToken: auraCostToken, auraCostBtc: auraCostBtc
   };
   localStorage.setItem("IlGiroSave", JSON.stringify(gameSave));
   saveNotification.style.opacity = 1;
@@ -190,6 +191,9 @@ function loadGame() {
     if (typeof savedGame.auraPoints !== "undefined") auraPoints = savedGame.auraPoints;
     if (typeof savedGame.auraPrestigeCount !== "undefined") auraPrestigeCount = savedGame.auraPrestigeCount;
     if (typeof savedGame.auraBaseMultiplier !== "undefined") auraBaseMultiplier = savedGame.auraBaseMultiplier;
+    if (typeof savedGame.auraCostGrammi !== "undefined") auraCostGrammi = savedGame.auraCostGrammi;
+    if (typeof savedGame.auraCostToken !== "undefined") auraCostToken = savedGame.auraCostToken;
+    if (typeof savedGame.auraCostBtc !== "undefined") auraCostBtc = savedGame.auraCostBtc;
   }
 }
 
@@ -441,15 +445,11 @@ function doPrestige() {
 }
 
 function doAuraPrestige() {
-  const needGrammi = AURA_COST_GRAMMI;
-  const needToken  = AURA_COST_TOKEN;
-  const needBtc    = AURA_COST_BTC;
+  if (score < auraCostGrammi) { alert(`❌ Ti mancano i Grammi! Servono ${formatNum(auraCostGrammi)} grammi.`); return; }
+  if (epsteinTokens < auraCostToken) { alert(`❌ Ti mancano gli Epstein Token! Servono ${formatNum(auraCostToken)} Token.`); return; }
+  if (btcBalance < auraCostBtc) { alert(`❌ Ti mancano i Bitcoin! Servono ${auraCostBtc} BTC.`); return; }
 
-  if (score < needGrammi) { alert(`❌ Ti mancano i Grammi! Servono ${needGrammi.toLocaleString()} grammi.`); return; }
-  if (epsteinTokens < needToken) { alert(`❌ Ti mancano gli Epstein Token! Servono ${needToken.toLocaleString()} Token.`); return; }
-  if (btcBalance < needBtc) { alert(`❌ Ti mancano i Bitcoin! Servono ${needBtc} BTC.`); return; }
-
-  if (!confirm(`⚠️ AURA PRESTIGE ⚠️\n\nQuesta azione azzera TUTTO:\n• Grammi, click, BPS\n• Tutti gli upgrade (anche permanenti)\n• Token, BTC, Miner\n• Moltiplicatore Prestigio\n\nIn cambio ricevi:\n• +10 Punti Aura\n• Moltiplicatore base x10 (permanente)\n\nSei sicuro?`)) return;
+  if (!confirm(`⚠️ AURA PRESTIGE ⚠️\n\nQuesta azione azzera TUTTO:\n• Grammi, click, BPS\n• Tutti gli upgrade (anche permanenti)\n• Token, BTC, Miner\n• Battle Pass\n• Moltiplicatore Prestigio\n\nIn cambio ricevi:\n• +10 Punti Aura\n• Moltiplicatore base x10 (permanente)\n\nI prossimi costi saranno:\n• Grammi: ${formatNum(auraCostGrammi * 2)}\n• Token: ${formatNum(auraCostToken * 2)}\n• BTC: ${auraCostBtc * 2}\n\nSei sicuro?`)) return;
 
   // ── RESET COMPLETO ──
   score = 0; clickPower = 1; autoClickBPS = 0;
@@ -469,15 +469,23 @@ function doAuraPrestige() {
   piantagioneCount = 0; piantagioneCurrentCost = piantagioneBaseCost;
   laboratorioCount = 0; laboratorioCurrentCost = laboratorioBaseCost;
 
-  epsteinTokens = 0; battlePassLevel = 0;
-  btcBalance = 0; btcMiners = 0; btcMinerCost = 1;
+  epsteinTokens = 0; btcBalance = 0; btcMiners = 0; btcMinerCost = 1;
+
+  // ── RESET BATTLE PASS ──
+  battlePassLevel = 0;
+  updateBattlePassDisplay();
+
+  // ── SCALA I COSTI DEL PROSSIMO AURA PRESTIGE (x2 ogni volta) ──
+  auraCostGrammi *= 2;
+  auraCostToken  *= 2;
+  auraCostBtc    *= 2;
 
   // ── RICOMPENSA AURA ──
   auraPrestigeCount++;
   auraPoints += 10;
   auraBaseMultiplier *= 10;
 
-  alert(`✨ AURA PRESTIGE COMPLETATO! ✨\n\nHai ora ${auraPoints} Punti Aura!\nMoltiplicatore base: x${auraBaseMultiplier.toLocaleString()}\n\nRicomincia da zero… ma 10 volte più forte!`);
+  alert(`✨ AURA PRESTIGE COMPLETATO! ✨\n\nHai ora ${auraPoints} Punti Aura!\nMoltiplicatore base: x${auraBaseMultiplier.toLocaleString()}\n\nProssimo Aura Prestige costerà:\n• ${formatNum(auraCostGrammi)} Grammi\n• ${formatNum(auraCostToken)} Token\n• ${auraCostBtc} BTC\n\nRicomincia da zero… ma 10 volte più forte!`);
   updateDisplay(); updateBtcDisplay(); updateAuraDisplay(); saveGame(); switchPage('forno');
 }
 
@@ -495,9 +503,16 @@ function updateAuraDisplay() {
   if (elC) elC.textContent = auraPrestigeCount;
   const elM = document.getElementById('aura-mlt-page');
   if (elM) elM.textContent = 'x' + auraBaseMultiplier.toLocaleString();
+  // costi dinamici nella pagina
+  const cG = document.getElementById('aura-cost-grammi');
+  if (cG) cG.textContent = formatNum(auraCostGrammi);
+  const cT = document.getElementById('aura-cost-token');
+  if (cT) cT.textContent = formatNum(auraCostToken);
+  const cB = document.getElementById('aura-cost-btc');
+  if (cB) cB.textContent = auraCostBtc;
   const btn = document.getElementById('btn-aura-prestige');
   if (btn) {
-    const canAfford = score >= AURA_COST_GRAMMI && epsteinTokens >= AURA_COST_TOKEN && btcBalance >= AURA_COST_BTC;
+    const canAfford = score >= auraCostGrammi && epsteinTokens >= auraCostToken && btcBalance >= auraCostBtc;
     btn.disabled = !canAfford;
   }
 }
