@@ -15,9 +15,9 @@
         <div class="btc-topbar">₿ BTC: <span id="btc-topbar-display">0.000</span></div>
     </div>
     <div class="prestige-stats">✨ Molt. Prestigio: x<span id="prestige-display">1</span> | Molt. Permanente: x<span id="perm-mult-display">1</span> ✨</div>
-    <div class="global-mult">Mult Click Totale: <span id="global-click-mult">1</span>x | Mult BPS Totale: <span id="global-bps-mult">1</span>x</div>
-    <div class="global-mult" style="color:#f9a825;">🌟 Punti Aura: <span id="aura-points-display">0</span> | Aura x<span id="aura-mult-display">1</span> | Prestige fatti: <span id="aura-count-display">0</span></div>
-    <div class="global-mult" style="color:#ff6600;font-size:12px;">🎰 Slot — BTC: <span id="topbar-aura-btc">x1</span> | Token/s: <span id="topbar-aura-token">x1</span> | Prestigio: <span id="topbar-aura-prestige">x1</span></div>
+    <div class="global-mult">Mult Click: <span id="global-click-mult">1</span>x | Mult BPS: <span id="global-bps-mult">1</span>x</div>
+    <div class="global-mult" style="color:#f9a825;">🌟 Aura: <span id="aura-points-display">0</span> ✦ | x<span id="aura-mult-display">1</span> | #<span id="aura-count-display">0</span></div>
+    <div class="global-mult" style="color:#e0b0ff;font-size:11px;" id="topbar-aura-shop">—</div>
 </div>
 
 <div id="nav-bar">
@@ -284,45 +284,50 @@
 
     <!-- AURA PRESTIGE PAGE -->
     <div id="page-aura" class="page">
-        <h2 style="color:#f9a825;">🌟 Aura Prestige</h2>
-        <div class="info-box" style="background:#1a0a2e;color:#e0b0ff;border:1px solid #8a2be2;">
-            L'Aura Prestige <strong style="color:#f9a825;">azzera tutto</strong> — grammi, token, BTC, upgrade permanenti, moltiplicatori — e ti dona <strong style="color:#f9a825;">+10 Punti Aura</strong> e un <strong style="color:#00e676;">moltiplicatore base x10</strong> permanente su tutto. Ideale dopo il Prestigio 50+.
+        <h2 style="color:#f9a825;">🌟 Aura</h2>
+
+        <!-- STATUS -->
+        <div style="background:#1a0a2e;border:2px solid #f9a825;border-radius:14px;padding:16px;width:100%;box-sizing:border-box;margin-bottom:14px;">
+            <div style="color:#f9a825;font-size:16px;font-weight:900;margin-bottom:10px;letter-spacing:2px;">📊 STATUS</div>
+            <div style="color:#e0b0ff;font-size:14px;margin:5px 0;">🌟 Punti Aura: <strong style="color:#f9a825;" id="aura-pts-page">0</strong> ✦</div>
+            <div style="color:#e0b0ff;font-size:14px;margin:5px 0;">🔁 Aura Prestige: <strong style="color:#f9a825;" id="aura-cnt-page">0</strong></div>
+            <div style="color:#e0b0ff;font-size:14px;margin:5px 0;">⚡ Moltiplicatore base: <strong style="color:#00e676;" id="aura-mlt-page">x1</strong></div>
         </div>
 
-        <div style="background:#1a0a2e;border:2px solid #f9a825;border-radius:14px;padding:18px;width:100%;box-sizing:border-box;margin-bottom:16px;">
-            <div style="color:#f9a825;font-size:18px;font-weight:900;margin-bottom:12px;letter-spacing:2px;">📊 IL TUO STATUS AURA</div>
-            <div style="color:#e0b0ff;font-size:15px;margin:6px 0;">🌟 Punti Aura: <strong style="color:#f9a825;" id="aura-pts-page">0</strong></div>
-            <div style="color:#e0b0ff;font-size:15px;margin:6px 0;">🔁 Aura Prestige effettuati: <strong style="color:#f9a825;" id="aura-cnt-page">0</strong></div>
-            <div style="color:#e0b0ff;font-size:15px;margin:6px 0;">⚡ Moltiplicatore Aura attuale: <strong style="color:#00e676;" id="aura-mlt-page">x1</strong></div>
+        <!-- NEGOZIO PUNTI AURA -->
+        <div style="background:#0d0020;border:2px solid #8a2be2;border-radius:14px;padding:16px;width:100%;box-sizing:border-box;margin-bottom:14px;">
+            <div style="color:#e0b0ff;font-size:16px;font-weight:900;margin-bottom:4px;letter-spacing:2px;">✦ NEGOZIO AURA</div>
+            <div style="color:#666;font-size:11px;margin-bottom:12px;">Upgrade PERMANENTI — non si resettano mai, nemmeno con l'Aura Prestige</div>
+
+            <button id="aura-shop-clickBoost" class="upg-btn" onclick="buyAuraUpgrade('clickBoost')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
+            <button id="aura-shop-bpsBoost" class="upg-btn" onclick="buyAuraUpgrade('bpsBoost')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
+            <button id="aura-shop-btcBoost" class="upg-btn" onclick="buyAuraUpgrade('btcBoost')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
+            <button id="aura-shop-tokenInterval" class="upg-btn" onclick="buyAuraUpgrade('tokenInterval')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
+            <button id="aura-shop-prestigeBonus" class="upg-btn" onclick="buyAuraUpgrade('prestigeBonus')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
+            <button id="aura-shop-startMult" class="upg-btn" onclick="buyAuraUpgrade('startMult')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
         </div>
 
-        <div style="background:#0d1b2a;border:2px solid #8a2be2;border-radius:14px;padding:18px;width:100%;box-sizing:border-box;margin-bottom:16px;">
-            <div style="color:#8a2be2;font-size:16px;font-weight:900;margin-bottom:14px;letter-spacing:2px;">💸 COSTO AURA PRESTIGE</div>
-            <div style="color:#ccc;font-size:14px;margin:8px 0;">🌿 Grammi richiesti: <strong style="color:#4CAF50;" id="aura-cost-grammi">500.000.000</strong></div>
-            <div style="color:#ccc;font-size:14px;margin:8px 0;">🔷 Epstein Token richiesti: <strong style="color:#90caf9;" id="aura-cost-token">1.000</strong></div>
-            <div style="color:#ccc;font-size:14px;margin:8px 0;">₿ Bitcoin richiesti: <strong style="color:#f9a825;" id="aura-cost-btc">50</strong> BTC</div>
+        <!-- COSTO PRESTIGE -->
+        <div style="background:#0d1b2a;border:2px solid #8a2be2;border-radius:14px;padding:16px;width:100%;box-sizing:border-box;margin-bottom:14px;">
+            <div style="color:#8a2be2;font-size:15px;font-weight:900;margin-bottom:12px;letter-spacing:2px;">💸 COSTO AURA PRESTIGE</div>
+            <div style="color:#ccc;font-size:13px;margin:6px 0;">🌿 Grammi: <strong style="color:#4CAF50;" id="aura-cost-grammi">200.000.000.000</strong></div>
+            <div style="color:#ccc;font-size:13px;margin:6px 0;">🔷 Token: <strong style="color:#90caf9;" id="aura-cost-token">1.000</strong></div>
+            <div style="color:#ccc;font-size:13px;margin:6px 0;">₿ BTC: <strong style="color:#f9a825;" id="aura-cost-btc">50</strong></div>
         </div>
 
-        <div style="background:#1a0a0a;border:2px solid #ff4444;border-radius:14px;padding:14px;width:100%;box-sizing:border-box;margin-bottom:20px;">
-            <div style="color:#ff4444;font-weight:bold;margin-bottom:8px;">⚠️ COSA PERDI</div>
-            <div style="color:#aaa;font-size:13px;line-height:1.8;">
-                Grammi • Click Power • BPS • Upgrade temporanei<br>
-                Upgrade permanenti • Token • BTC • Miner<br>
-                Battle Pass • Moltiplicatore Prestigio
+        <div style="display:flex;gap:10px;margin-bottom:14px;">
+            <div style="flex:1;background:#1a0a0a;border:1px solid #ff4444;border-radius:10px;padding:12px;">
+                <div style="color:#ff4444;font-weight:bold;font-size:12px;margin-bottom:6px;">⚠️ PERDI</div>
+                <div style="color:#888;font-size:11px;line-height:1.7;">Grammi • BPS • Click<br>Upgrade permanenti<br>Token • BTC • Battle Pass</div>
             </div>
-        </div>
-
-        <div style="background:#0a2e0a;border:2px solid #00e676;border-radius:14px;padding:14px;width:100%;box-sizing:border-box;margin-bottom:20px;">
-            <div style="color:#00e676;font-weight:bold;margin-bottom:8px;">✅ COSA GUADAGNI</div>
-            <div style="color:#aaa;font-size:13px;line-height:1.8;">
-                +10 Punti Aura permanenti<br>
-                Moltiplicatore base x10 su tutto (cumulativo)<br>
-                Fama eterna nel Giro
+            <div style="flex:1;background:#0a2e0a;border:1px solid #00e676;border-radius:10px;padding:12px;">
+                <div style="color:#00e676;font-weight:bold;font-size:12px;margin-bottom:6px;">✅ GUADAGNI</div>
+                <div style="color:#888;font-size:11px;line-height:1.7;">+10 Punti Aura (✦)<br>Mult base x10<br>Upgrade shop restano!</div>
             </div>
         </div>
 
         <button id="btn-aura-prestige" onclick="doAuraPrestige()" disabled
-            style="background:linear-gradient(135deg,#8a2be2,#f9a825);color:white;font-size:18px;font-weight:900;letter-spacing:2px;padding:18px;border-radius:12px;border:none;width:100%;cursor:pointer;box-shadow:0 0 30px rgba(249,168,37,0.4);">
+            style="background:linear-gradient(135deg,#8a2be2,#f9a825);color:white;font-size:17px;font-weight:900;letter-spacing:2px;padding:16px;border-radius:12px;border:none;width:100%;cursor:pointer;box-shadow:0 0 30px rgba(249,168,37,0.4);">
             🌟 ESEGUI AURA PRESTIGE
         </button>
         </div>
@@ -340,7 +345,7 @@
 <script src="script.js"></script>
 <script src="socrate_event.js"></script>
 <script src="minesweeper_event.js"></script>
-<script src="aura_slot.js"></script>
 <script src="crazy_time.js"></script>
+<script src="shell_game_event.js"></script>
 </body>
 </html>
