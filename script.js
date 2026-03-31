@@ -12,12 +12,12 @@ let bjDealerCards = [];
 let bjBet = 0;
 let bjGameInProgress = false;
 
-let clickUpgradeCost = 10;
-let autoClickerCost = 50;
-let dryCost = 500;
-let frozenCost = 1500;
+let clickUpgradeCost = 15;
+let autoClickerCost = 100;
+let dryCost = 1200;
+let frozenCost = 8000;
 let mysteryCost = 1000;
-let prestigeThreshold = 3000;
+let prestigeThreshold = 500000;  // primo prestige richiede 500k grammi
 
 // Variabili per i Potenziamenti (Upgrade)
 let hasUpgrade1 = false; // Click x2
@@ -31,14 +31,14 @@ let hasUpgrade8 = false; // BPS x5
 
 // Nuovi negozio base
 let spacciatoreCount = 0;
-let spacciatoreBaseCost = 5000;
-let spacciatoreCurrentCost = 5000;
+let spacciatoreBaseCost = 40000;
+let spacciatoreCurrentCost = 40000;
 let piantagioneCount = 0;
-let piantagioneBaseCost = 20000;
-let piantagioneCurrentCost = 20000;
+let piantagioneBaseCost = 300000;
+let piantagioneCurrentCost = 300000;
 let laboratorioCount = 0;
-let laboratorioBaseCost = 100000;
-let laboratorioCurrentCost = 100000;
+let laboratorioBaseCost = 3000000;
+let laboratorioCurrentCost = 3000000;
 
 // Permanenti (non resettano al prestige)
 let hasPermanent1 = false;
@@ -237,54 +237,75 @@ function switchPage(pageName) {
 
 function clickCookie() { score += getEffClick(); updateDisplay(); }
 
-function buyClickUpgrade() { if (score >= clickUpgradeCost) { score -= clickUpgradeCost; clickPower += 1; clickUpgradeCost = Math.floor(clickUpgradeCost * 1.5); updateDisplay(); } }
+// Click upgrade: +1 click power, costo scala x1.3 (morbido)
+function buyClickUpgrade() {
+  if (score >= clickUpgradeCost) {
+    score -= clickUpgradeCost;
+    clickPower += 1;
+    clickUpgradeCost = Math.floor(clickUpgradeCost * 1.3);
+    updateDisplay();
+  }
+}
 
-function buyAutoClicker() { if (score >= autoClickerCost) { score -= autoClickerCost; autoClickBPS += 1; autoClickerCost = Math.floor(autoClickerCost * 1.5); updateDisplay(); } }
+// Erba: +0.2 BPS, costo scala x1.15 — primo producer come Cursor di CC
+function buyAutoClicker() {
+  if (score >= autoClickerCost) {
+    score -= autoClickerCost;
+    autoClickBPS += 0.2;
+    autoClickerCost = Math.floor(autoClickerCost * 1.15);
+    updateDisplay();
+  }
+}
 
+// Dry: +1 BPS, costo scala x1.15
 function Buydry() {
   if (score >= dryCost) {
     score -= dryCost;
-    autoClickBPS += 10;
-    dryCost = Math.floor(dryCost * 1.5);
+    autoClickBPS += 1;
+    dryCost = Math.floor(dryCost * 1.15);
     updateDisplay();
   }
 }
 
+// Frozen: +4 BPS, costo scala x1.15
 function BuyfrozenCost() {
   if (score >= frozenCost) {
     score -= frozenCost;
-    autoClickBPS += 25;
-    frozenCost = Math.floor(frozenCost * 1.5);
+    autoClickBPS += 4;
+    frozenCost = Math.floor(frozenCost * 1.15);
     updateDisplay();
   }
 }
 
+// THC (Spacciatore): +10 BPS, costo scala x1.12
 function buySpacciatore() {
   if (score >= spacciatoreCurrentCost) {
     score -= spacciatoreCurrentCost;
     spacciatoreCount++;
-    autoClickBPS += 75;
-    spacciatoreCurrentCost = Math.floor(spacciatoreBaseCost * Math.pow(1.5, spacciatoreCount));
+    autoClickBPS += 10;
+    spacciatoreCurrentCost = Math.floor(spacciatoreBaseCost * Math.pow(1.12, spacciatoreCount));
     updateDisplay();
   }
 }
 
+// Hashish (Piantagione): +40 BPS, costo scala x1.12
 function buyPiantagione() {
   if (score >= piantagioneCurrentCost) {
     score -= piantagioneCurrentCost;
     piantagioneCount++;
-    autoClickBPS += 250;
-    piantagioneCurrentCost = Math.floor(piantagioneBaseCost * Math.pow(1.5, piantagioneCount));
+    autoClickBPS += 40;
+    piantagioneCurrentCost = Math.floor(piantagioneBaseCost * Math.pow(1.12, piantagioneCount));
     updateDisplay();
   }
 }
 
+// GHB (Laboratorio): +200 BPS, costo scala x1.12
 function buyLaboratorio() {
   if (score >= laboratorioCurrentCost) {
     score -= laboratorioCurrentCost;
     laboratorioCount++;
-    autoClickBPS += 1000;
-    laboratorioCurrentCost = Math.floor(laboratorioBaseCost * Math.pow(1.5, laboratorioCount));
+    autoClickBPS += 200;
+    laboratorioCurrentCost = Math.floor(laboratorioBaseCost * Math.pow(1.12, laboratorioCount));
     updateDisplay();
   }
 }
@@ -308,68 +329,44 @@ function buyPermanentUpgrade(id, tokenCost) {
   if (epsteinTokens < tokenCost) return;
 
   if (id === 1 && !hasPermanent1) {
-    epsteinTokens -= tokenCost;
-    hasPermanent1 = true;
-    permanentClickMultiplier *= 3; // x3 click
+    epsteinTokens -= tokenCost; hasPermanent1 = true;
+    permanentClickMultiplier *= 2; // x2 click (era x3, troppo forte)
   }
   if (id === 2 && !hasPermanent2) {
-    epsteinTokens -= tokenCost;
-    hasPermanent2 = true;
-    permanentBpsMultiplier *= 3; // x3 bps
+    epsteinTokens -= tokenCost; hasPermanent2 = true;
+    permanentBpsMultiplier *= 2; // x2 bps
   }
   if (id === 3 && !hasPermanent3) {
-    epsteinTokens -= tokenCost;
-    hasPermanent3 = true;
-    permanentPrestigeMultiplier *= 1.5; // x1.5 prestige
+    epsteinTokens -= tokenCost; hasPermanent3 = true;
+    permanentPrestigeMultiplier *= 1.3; // x1.3 prestige (era x1.5)
   }
   if (id === 4 && !hasPermanent4) {
-    epsteinTokens -= tokenCost;
-    hasPermanent4 = true;
-    permanentBpsMultiplier *= 3; // x3 bps
+    epsteinTokens -= tokenCost; hasPermanent4 = true;
+    permanentBpsMultiplier *= 2;
   }
   if (id === 5 && !hasPermanent5) {
-    epsteinTokens -= tokenCost;
-    hasPermanent5 = true;
-    // Token per second will be handled in setInterval
+    epsteinTokens -= tokenCost; hasPermanent5 = true;
+    permanentClickMultiplier *= 3; // ex perm6
   }
   if (id === 6 && !hasPermanent6) {
-    epsteinTokens -= tokenCost;
-    hasPermanent6 = true;
-    permanentClickMultiplier *= 5;
+    epsteinTokens -= tokenCost; hasPermanent6 = true;
+    permanentBpsMultiplier *= 3; // ex perm7
   }
   if (id === 7 && !hasPermanent7) {
-    epsteinTokens -= tokenCost;
-    hasPermanent7 = true;
-    permanentBpsMultiplier *= 5;
+    epsteinTokens -= tokenCost; hasPermanent7 = true;
+    permanentClickMultiplier *= 5; // ex perm9
   }
   if (id === 8 && !hasPermanent8) {
-    epsteinTokens -= tokenCost;
-    hasPermanent8 = true;
-    // Dimezza l'intervallo tra un token e l'altro (min 2s)
-    auraShop.tokenInterval = Math.max(2, Math.floor(auraShop.tokenInterval / 2));
+    epsteinTokens -= tokenCost; hasPermanent8 = true;
+    permanentBpsMultiplier *= 5; // ex perm10
   }
   if (id === 9 && !hasPermanent9) {
-    epsteinTokens -= tokenCost;
-    hasPermanent9 = true;
-    permanentClickMultiplier *= 8;
+    epsteinTokens -= tokenCost; hasPermanent9 = true;
+    permanentBtcMultiplier *= 2; // ex perm11
   }
   if (id === 10 && !hasPermanent10) {
-    epsteinTokens -= tokenCost;
-    hasPermanent10 = true;
-    permanentBpsMultiplier *= 8;
-  }
-  if (id === 11 && !hasPermanent11) {
-    epsteinTokens -= tokenCost;
-    hasPermanent11 = true;
-    permanentBtcMultiplier *= 2;
-  }
-  if (id === 12 && !hasPermanent12) {
-    epsteinTokens -= tokenCost;
-    hasPermanent12 = true;
-    permanentClickMultiplier *= 2;
-    permanentBpsMultiplier *= 2;
-    permanentBtcMultiplier *= 2;
-    auraShop.tokenInterval = Math.max(2, Math.floor(auraShop.tokenInterval / 2));
+    epsteinTokens -= tokenCost; hasPermanent10 = true;
+    permanentClickMultiplier *= 2; permanentBpsMultiplier *= 2; permanentBtcMultiplier *= 2; // ex perm12
   }
 
   updateDisplay();
@@ -379,10 +376,10 @@ function buyPermanentUpgrade(id, tokenCost) {
 function doPrestige() {
   if (score >= prestigeThreshold) {
     prestigeMultiplier += 1;
-    epsteinTokens += 2 + auraShop.prestigeBonus;
-    prestigeThreshold = Math.floor(prestigeThreshold * 2.5);
+    epsteinTokens += 1 + auraShop.prestigeBonus;  // solo 1 token per prestige
+    prestigeThreshold = Math.floor(prestigeThreshold * 4);  // scala x4 (molto più lento)
     score = 0; clickPower = 1; autoClickBPS = 0;
-    clickUpgradeCost = 10; autoClickerCost = 50; dryCost = 500; frozenCost = 1500;
+    clickUpgradeCost = 15; autoClickerCost = 100; dryCost = 1200; frozenCost = 8000;
 
     hasUpgrade1 = false; hasUpgrade2 = false; hasUpgrade3 = false; hasUpgrade4 = false;
     hasUpgrade5 = false; hasUpgrade6 = false; hasUpgrade7 = false; hasUpgrade8 = false;
@@ -390,7 +387,7 @@ function doPrestige() {
     piantagioneCount = 0; piantagioneCurrentCost = piantagioneBaseCost;
     laboratorioCount = 0; laboratorioCurrentCost = laboratorioBaseCost;
 
-    alert("Hai fatto Prestigio! Ora il tuo moltiplicatore è x" + prestigeMultiplier + " e hai guadagnato 2 Epstein Token! 🔷");
+    alert("Hai fatto Prestigio! Moltiplicatore x" + prestigeMultiplier + " | +1 Epstein Token 🔷\nProssimo prestigio: " + formatNum(prestigeThreshold) + " grammi");
     updateDisplay(); saveGame(); switchPage('forno');
   }
 }
@@ -404,8 +401,8 @@ function doAuraPrestige() {
 
   // ── RESET COMPLETO ──
   score = 0; clickPower = 1; autoClickBPS = 0;
-  clickUpgradeCost = 10; autoClickerCost = 50; dryCost = 500; frozenCost = 1500;
-  prestigeThreshold = 10000; prestigeMultiplier = 1;
+  clickUpgradeCost = 15; autoClickerCost = 100; dryCost = 1200; frozenCost = 8000;
+  prestigeThreshold = 500000; prestigeMultiplier = 1;
 
   hasUpgrade1 = false; hasUpgrade2 = false; hasUpgrade3 = false; hasUpgrade4 = false;
   hasUpgrade5 = false; hasUpgrade6 = false; hasUpgrade7 = false; hasUpgrade8 = false;
@@ -747,18 +744,16 @@ function updateDisplay() {
     }
   }
 
-  setPermanentBtnState(document.getElementById('btn-perm1'), hasPermanent1, 5, "Click x3");
-  setPermanentBtnState(document.getElementById('btn-perm2'), hasPermanent2, 10, "BPS x3");
-  setPermanentBtnState(document.getElementById('btn-perm3'), hasPermanent3, 15, "Prestigio x1.5");
-  setPermanentBtnState(document.getElementById('btn-perm4'), hasPermanent4, 25, "BPS x3");
-  setPermanentBtnState(document.getElementById('btn-perm5'), hasPermanent5, 30, "Token/s");
-  setPermanentBtnState(document.getElementById('btn-perm6'), hasPermanent6, 40, "Erba Premium (Click x5)");
-  setPermanentBtnState(document.getElementById('btn-perm7'), hasPermanent7, 50, "Shit molto crazy (BPS x5)");
-  setPermanentBtnState(document.getElementById('btn-perm8'), hasPermanent8, 60, "Rete di Spaccio (Token/s x2)");
-  setPermanentBtnState(document.getElementById('btn-perm9'), hasPermanent9, 75, "Jean-Michelle-Basquiat (Click x8)");
-  setPermanentBtnState(document.getElementById('btn-perm10'), hasPermanent10, 90, "Walter White (BPS x8)");
-  setPermanentBtnState(document.getElementById('btn-perm11'), hasPermanent11, 100, "₿ BTC Boost (Miner x2)");
-  setPermanentBtnState(document.getElementById('btn-perm12'), hasPermanent12, 120, "🌌 Zanotti Sgravo Mode (Tutto x2)");
+  setPermanentBtnState(document.getElementById('btn-perm1'), hasPermanent1, 3,   "🖱️ Click x2");
+  setPermanentBtnState(document.getElementById('btn-perm2'), hasPermanent2, 3,   "🌿 BPS x2");
+  setPermanentBtnState(document.getElementById('btn-perm3'), hasPermanent3, 5,   "✨ Prestigio x1.3");
+  setPermanentBtnState(document.getElementById('btn-perm4'), hasPermanent4, 8,   "🌿 BPS x2 (II)");
+  setPermanentBtnState(document.getElementById('btn-perm5'), hasPermanent5, 12,  "⚡ Click x3");
+  setPermanentBtnState(document.getElementById('btn-perm6'), hasPermanent6, 15,  "🏭 BPS x3");
+  setPermanentBtnState(document.getElementById('btn-perm7'), hasPermanent7, 25,  "🎯 Click x5");
+  setPermanentBtnState(document.getElementById('btn-perm8'), hasPermanent8, 30,  "🔥 BPS x5");
+  setPermanentBtnState(document.getElementById('btn-perm9'), hasPermanent9, 40,  "₿ BTC Miner x2");
+  setPermanentBtnState(document.getElementById('btn-perm10'), hasPermanent10, 60, "🌌 Tutto x2");
 
   updateAuraDisplay();
 }
@@ -993,19 +988,6 @@ setInterval(function() {
   if (autoClickBPS > 0) {
     score += getEffBps();
     updateDisplay();
-  }
-}, 1000);
-
-// Token production: 1 token ogni auraShop.tokenInterval secondi
-let _tokenTick = 0;
-setInterval(function() {
-  if (hasPermanent5) {
-    _tokenTick++;
-    if (_tokenTick >= auraShop.tokenInterval) {
-      _tokenTick = 0;
-      epsteinTokens += 1;
-      updateDisplay();
-    }
   }
 }, 1000);
 

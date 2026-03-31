@@ -45,29 +45,29 @@
         <div class="shop">
             <h3>🛒 Negozio Base</h3>
             <button id="btn-click-upgrade" onclick="buyClickUpgrade()">
-                👆 Migliora Click (Costo: <span id="click-cost">10</span>) +1g/click
+                👆 Migliora Click (Costo: <span id="click-cost">15</span>) +1g/click
             </button>
             <button id="btn-auto-click" onclick="buyAutoClicker()">
-                🌿 Compra Erba (Costo: <span id="auto-cost">50</span>) +1g/s
+                🌿 Erba (Costo: <span id="auto-cost">100</span>) +0.2g/s
             </button>
             <button id="btn-dry" onclick="Buydry()">
-                🏭 Compra Dry (Costo: <span id="dry-cost">500</span>) +10g/s
+                🏭 Dry (Costo: <span id="dry-cost">1200</span>) +1g/s
             </button>
             <button id="btn-frozen" onclick="BuyfrozenCost()">
-                🏭 Compra Frozen (Costo: <span id="frozen-cost">1500</span>) +25g/s
+                ❄️ Frozen (Costo: <span id="frozen-cost">8000</span>) +4g/s
             </button>
             <button id="btn-spacciatore" onclick="buySpacciatore()">
-                🌿 THC (Costo: <span id="spacciatore-cost">5000</span>) +75g/s
+                💊 THC (Costo: <span id="spacciatore-cost">40000</span>) +10g/s
             </button>
             <button id="btn-piantagione" onclick="buyPiantagione()">
-                🌱 hashish (Costo: <span id="piantagione-cost">20000</span>) +250g/s
+                🌱 Hashish (Costo: <span id="piantagione-cost">300000</span>) +40g/s
             </button>
             <button id="btn-laboratorio" onclick="buyLaboratorio()">
-                🧪 GHB (Costo: <span id="laboratorio-cost">100000</span>) +1000g/s
+                🧪 GHB (Costo: <span id="laboratorio-cost">3000000</span>) +200g/s
             </button>
 
             <button id="btn-prestige" onclick="doPrestige()">
-                    🌌 Fai Prestigio (Richiede <span id="prestige-cost">10000</span>)
+                    🌌 Fai Prestigio (Richiede <span id="prestige-cost">500000</span>)
             </button>
         </div>
     </div>
@@ -78,29 +78,29 @@
            Il ghetto ti offre potenziamenti enormi,si acquistano una sola volta e si perdono quando fai Prestigio.
         </div>
         <div class="shop">
-            <button id="btn-upg1" class="upg-btn" onclick="buyUpgrade(1, 2500)">
-                🖱️ Sniffer (Click x2) - 2.500
+            <button id="btn-upg1" class="upg-btn" onclick="buyUpgrade(1, 10000)">
+                🖱️ Sniffer (Click x2) - 10.000
             </button>
-            <button id="btn-upg2" class="upg-btn" onclick="buyUpgrade(2, 10000)">
-                ✨ Cocaina (WPS x2) - 10.000
+            <button id="btn-upg2" class="upg-btn" onclick="buyUpgrade(2, 50000)">
+                ✨ Cocaina (BPS x2) - 50.000
             </button>
-            <button id="btn-upg3" class="upg-btn" onclick="buyUpgrade(3, 50000)">
-                🍫 Robba buona (Click x3) - 50.000
+            <button id="btn-upg3" class="upg-btn" onclick="buyUpgrade(3, 250000)">
+                🍫 Robba buona (Click x3) - 250.000
             </button>
-            <button id="btn-upg4" class="upg-btn" onclick="buyUpgrade(4, 100000)">
-                🔥 ts lit as fuck (WPS x3) - 100.000
+            <button id="btn-upg4" class="upg-btn" onclick="buyUpgrade(4, 500000)">
+                🔥 ts lit as fuck (BPS x3) - 500.000
             </button>
-            <button id="btn-upg5" class="upg-btn" onclick="buyUpgrade(5, 300000)">
-                🌙 Stephen Hawking (Click x4) - 300.000
+            <button id="btn-upg5" class="upg-btn" onclick="buyUpgrade(5, 2000000)">
+                🌙 Stephen Hawking (Click x4) - 2.000.000
             </button>
-            <button id="btn-upg6" class="upg-btn" onclick="buyUpgrade(6, 750000)">
-                💊 Pasticche (WPS x4) - 750.000
+            <button id="btn-upg6" class="upg-btn" onclick="buyUpgrade(6, 5000000)">
+                💊 Pasticche (BPS x4) - 5.000.000
             </button>
-            <button id="btn-upg7" class="upg-btn" onclick="buyUpgrade(7, 2000000)">
-                🎯 Triple T (Click x5) - 2.000.000
+            <button id="btn-upg7" class="upg-btn" onclick="buyUpgrade(7, 20000000)">
+                🎯 Triple T (Click x5) - 20.000.000
             </button>
-            <button id="btn-upg8" class="upg-btn" onclick="buyUpgrade(8, 5000000)">
-                🏔️ Crazy Mode (WPS x5) - 5.000.000
+            <button id="btn-upg8" class="upg-btn" onclick="buyUpgrade(8, 50000000)">
+                🏔️ Crazy Mode (BPS x5) - 50.000.000
             </button>
         </div>
     </div>
@@ -111,18 +111,16 @@
             Qui spendi gli Epstein Token per bonus permanenti che non si resetteranno con il prestigio.
         </div>
         <div class="shop">
-            <button id="btn-perm1" class="upg-btn" onclick="buyPermanentUpgrade(1, 5)">🔹 Click x3 (5 Token)</button>
-            <button id="btn-perm2" class="upg-btn" onclick="buyPermanentUpgrade(2, 10)">🔹 BPS x3 (10 Token)</button>
-            <button id="btn-perm3" class="upg-btn" onclick="buyPermanentUpgrade(3, 15)">🔹 Prestigio x1.5 (15 Token)</button>
-            <button id="btn-perm4" class="upg-btn" onclick="buyPermanentUpgrade(4, 25)">🔹 BPS x3 (25 Token)</button>
-            <button id="btn-perm5" class="upg-btn" onclick="buyPermanentUpgrade(5, 30)">🔹 Token/s (30 Token)</button>
-            <button id="btn-perm6" class="upg-btn" onclick="buyPermanentUpgrade(6, 40)"> Erba Premium (Click x5) (40 Token)</button>
-            <button id="btn-perm7" class="upg-btn" onclick="buyPermanentUpgrade(7, 50)"> Shit molto crazy (BPS x5) (50 Token)</button>
-            <button id="btn-perm8" class="upg-btn" onclick="buyPermanentUpgrade(8, 60)"> Rete di Spaccio (Token/s x2) (60 Token)</button>
-            <button id="btn-perm9" class="upg-btn" onclick="buyPermanentUpgrade(9, 75)"> Jean-Michelle-Basquiat (Click x8) (75 Token)</button>
-            <button id="btn-perm10" class="upg-btn" onclick="buyPermanentUpgrade(10, 90)"> Walter White (BPS x8) (90 Token)</button>
-            <button id="btn-perm11" class="upg-btn" onclick="buyPermanentUpgrade(11, 100)"> ₿ BTC Boost (Miner x2) (100 Token)</button>
-            <button id="btn-perm12" class="upg-btn" onclick="buyPermanentUpgrade(12, 120)"> 🌌 Zanotti sgravo Mode (Tutto x2) (120 Token)</button>
+            <button id="btn-perm1" class="upg-btn" onclick="buyPermanentUpgrade(1, 3)">🖱️ Click x2 (3 Token)</button>
+            <button id="btn-perm2" class="upg-btn" onclick="buyPermanentUpgrade(2, 3)">🌿 BPS x2 (3 Token)</button>
+            <button id="btn-perm3" class="upg-btn" onclick="buyPermanentUpgrade(3, 5)">✨ Prestigio x1.3 (5 Token)</button>
+            <button id="btn-perm4" class="upg-btn" onclick="buyPermanentUpgrade(4, 8)">🌿 BPS x2 II (8 Token)</button>
+            <button id="btn-perm5" class="upg-btn" onclick="buyPermanentUpgrade(5, 12)">⚡ Click x3 (12 Token)</button>
+            <button id="btn-perm6" class="upg-btn" onclick="buyPermanentUpgrade(6, 15)">🏭 BPS x3 (15 Token)</button>
+            <button id="btn-perm7" class="upg-btn" onclick="buyPermanentUpgrade(7, 25)">🎯 Click x5 (25 Token)</button>
+            <button id="btn-perm8" class="upg-btn" onclick="buyPermanentUpgrade(8, 30)">🔥 BPS x5 (30 Token)</button>
+            <button id="btn-perm9" class="upg-btn" onclick="buyPermanentUpgrade(9, 40)">₿ BTC Miner x2 (40 Token)</button>
+            <button id="btn-perm10" class="upg-btn" onclick="buyPermanentUpgrade(10, 60)">🌌 Tutto x2 (60 Token)</button>
         </div>
     </div>
 
