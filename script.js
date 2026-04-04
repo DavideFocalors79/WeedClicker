@@ -1495,3 +1495,16 @@ setInterval(function() {
   // Expose init for nav
   window.avInit = avInit;
 })();
+
+// -- FIX: Mantenere costante la distanza della produzione dalla topbar --
+function updateStickyTop() {
+    const topBar = document.getElementById('top-bar');
+    const leftPanel = document.querySelector('.left-panel');
+    if (topBar && leftPanel) {
+        // Applica l'altezza calcolata della topbar + una distanza fissa confortevole (30px)
+        leftPanel.style.top = (topBar.offsetHeight + 30) + 'px';
+    }
+}
+window.addEventListener('resize', updateStickyTop);
+document.addEventListener('DOMContentLoaded', updateStickyTop);
+setInterval(updateStickyTop, 1000); // Check continuo per eventuali cambi dimensione (es. navbar multiriga)

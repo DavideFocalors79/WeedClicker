@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weed Clicker</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Fira+Code:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    
+    <!-- FIX PER LA CACHE DEL BROWSER: Per forzare lo stile aggiornato basta premere Ctrl+F5 sulla pagina! -->
 </head>
 <body>
 
@@ -17,322 +23,328 @@
     <div class="prestige-stats">✨ Molt. Prestigio: x<span id="prestige-display">1</span> | Molt. Permanente: x<span id="perm-mult-display">1</span> ✨</div>
     <div class="global-mult">Mult Click: <span id="global-click-mult">1</span>x | Mult BPS: <span id="global-bps-mult">1</span>x</div>
     <div class="global-mult" style="color:#f9a825;">🌟 Aura: <span id="aura-points-display">0</span> ✦ | x<span id="aura-mult-display">1</span> | #<span id="aura-count-display">0</span></div>
-    <div class="global-mult" style="color:#e0b0ff;font-size:11px;" id="topbar-aura-shop">—</div>
+    <div class="global-mult" style="color:#e0b0ff;font-size:15px;" id="topbar-aura-shop">—</div>
 </div>
 
-<div id="nav-bar">
-    <button id="nav-forno" class="nav-btn active" onclick="switchPage('forno')">Il Giro</button>
-    <button id="nav-upgrades" class="nav-btn" onclick="switchPage('upgrades')">Robba Buona</button>
-    <button id="nav-permanent" class="nav-btn" onclick="switchPage('permanent')">L'isola</button>
-    <button id="nav-casino" class="nav-btn" onclick="switchPage('casino')">🎡 Crazy Time!</button>
-    <button id="nav-battlepass" class="nav-btn" onclick="switchPage('battlepass')">Battle Pass</button>
-    <button id="nav-blackjack" class="nav-btn" onclick="switchPage('blackjack')">🃏 Blackjack</button>
-    <button id="nav-bitcoin" class="nav-btn" onclick="switchPage('bitcoin')">₿ Bitcoin</button>
-    <button id="nav-aviator" class="nav-btn" onclick="switchPage('aviator')">✈️ Aviator</button>
-    <button id="nav-aura" class="nav-btn" onclick="switchPage('aura')" style="background:linear-gradient(135deg,#1a0a2e,#f9a825);color:#fff;border-color:#f9a825;">🌟 Aura</button>
-</div>
-
-<div id="game-container">
-
-    <div id="page-forno" class="page active">
+<div class="main-layout">
+    <!-- COLONNA SINISTRA FISSA -->
+    <div class="left-panel">
         <h2>Produzione</h2>
         <img id="cookie" src="barchi.png" width="150" onclick="clickCookie()">
         <div class="stats">
             Per click (Totale): <span id="eff-click-power">1</span><br>
             Al secondo (Totale): <span id="eff-bps">0</span>
         </div>
-
-        <div class="shop">
-            <h3>🛒 Negozio Base</h3>
-            <button id="btn-click-upgrade" onclick="buyClickUpgrade()">
-                👆 Migliora Click (Costo: <span id="click-cost">15</span>) +1g/click
-            </button>
-            <button id="btn-auto-click" onclick="buyAutoClicker()">
-                🌿 Erba (Costo: <span id="auto-cost">100</span>) +0.2g/s
-            </button>
-            <button id="btn-dry" onclick="Buydry()">
-                🏭 Dry (Costo: <span id="dry-cost">1200</span>) +1g/s
-            </button>
-            <button id="btn-frozen" onclick="BuyfrozenCost()">
-                ❄️ Frozen (Costo: <span id="frozen-cost">8000</span>) +4g/s
-            </button>
-            <button id="btn-spacciatore" onclick="buySpacciatore()">
-                💊 THC (Costo: <span id="spacciatore-cost">40000</span>) +10g/s
-            </button>
-            <button id="btn-piantagione" onclick="buyPiantagione()">
-                🌱 Hashish (Costo: <span id="piantagione-cost">300000</span>) +40g/s
-            </button>
-            <button id="btn-laboratorio" onclick="buyLaboratorio()">
-                🧪 GHB (Costo: <span id="laboratorio-cost">3000000</span>) +200g/s
-            </button>
-            <button id="btn-cartel" onclick="buyCartel()">
-                💼 Cartello (Costo: <span id="cartel-cost">30000000</span>) +1.200g/s
-            </button>
-            <button id="btn-narcosub" onclick="buyNarcosub()">
-                🚢 DMT (Costo: <span id="narcosub-cost">350000000</span>) +8.000g/s
-            </button>
-            <button id="btn-chimica" onclick="buyChimica()">
-                ☠️ Fentanyl (Costo: <span id="chimica-cost">5000000000</span>) +60.000g/s
-            </button>
-
-            <button id="btn-prestige" onclick="doPrestige()">
-                    🌌 Fai Prestigio (Richiede <span id="prestige-cost">500000</span>)
-            </button>
+        
+        <div class="options">
+            <button onclick="saveGame()">💾 Salva Ora</button>
+            <button id="btn-reset" onclick="resetGame()">🗑️ Azzera Dati</button>
         </div>
     </div>
 
-    <div id="page-upgrades" class="page">
-        <h2>Il Ghetto</h2>
-        <div class="info-box">
-           Il ghetto ti offre potenziamenti enormi,si acquistano una sola volta e si perdono quando fai Prestigio.
+    <!-- COLONNA DESTRA NAVIGABILE -->
+    <div class="right-panel">
+        <div id="nav-bar">
+            <button id="nav-forno" class="nav-btn active" onclick="switchPage('forno')">Il Giro</button>
+            <button id="nav-upgrades" class="nav-btn" onclick="switchPage('upgrades')">Robba Buona</button>
+            <button id="nav-permanent" class="nav-btn" onclick="switchPage('permanent')">L'isola</button>
+            <button id="nav-casino" class="nav-btn" onclick="switchPage('casino')">🎡 Crazy Time!</button>
+            <button id="nav-battlepass" class="nav-btn" onclick="switchPage('battlepass')">Battle Pass</button>
+            <button id="nav-blackjack" class="nav-btn" onclick="switchPage('blackjack')">🃏 Blackjack</button>
+            <button id="nav-bitcoin" class="nav-btn" onclick="switchPage('bitcoin')">₿ Bitcoin</button>
+            <button id="nav-aviator" class="nav-btn" onclick="switchPage('aviator')">✈️ Aviator</button>
+            <button id="nav-aura" class="nav-btn" onclick="switchPage('aura')" style="background:linear-gradient(135deg,#1a0a2e,#f9a825);color:#fff;border-color:#f9a825;">🌟 Aura</button>
         </div>
-        <div class="shop">
-            <button id="btn-upg1" class="upg-btn" onclick="buyUpgrade(1, 10000000)">🌿 Erba Premium (Click x2)</button>
-            <button id="btn-upg2" class="upg-btn" onclick="buyUpgrade(2, 50000000)">❄️ Frozen Boost (BPS x2)</button>
-            <button id="btn-upg3" class="upg-btn" onclick="buyUpgrade(3, 250000000)">💊 Pasticche (Click x3)</button>
-            <button id="btn-upg4" class="upg-btn" onclick="buyUpgrade(4, 500000000)">🔥 Crack (BPS x3)</button>
-            <button id="btn-upg5" class="upg-btn" onclick="buyUpgrade(5, 2000000000)">🍄 Funghi (Click x4)</button>
-            <button id="btn-upg6" class="upg-btn" onclick="buyUpgrade(6, 5000000000)">💉 Eroina (BPS x4)</button>
-            <button id="btn-upg7" class="upg-btn" onclick="buyUpgrade(7, 20000000000)">🧪 Metanfetamina (Click x5)</button>
-            <button id="btn-upg8" class="upg-btn" onclick="buyUpgrade(8, 50000000000)">☠️ Fentanyl (BPS x5)</button>
-            <button id="btn-upg9" class="upg-btn" onclick="buyUpgrade(9, 200000000000)">🌀 DMT (Click x6)</button>
-            <button id="btn-upg10" class="upg-btn" onclick="buyUpgrade(10, 500000000000)">💀 Krokodil (BPS x6)</button>
+
+        <div id="game-container">
+            <div id="page-forno" class="page active">
+                <div class="shop">
+                    <h3>🛒 Negozio Base</h3>
+                    <button id="btn-click-upgrade" onclick="buyClickUpgrade()">
+                        👆 Migliora Click (Costo: <span id="click-cost">15</span>) +1g/click
+                    </button>
+                    <button id="btn-auto-click" onclick="buyAutoClicker()">
+                        🌿 Erba (Costo: <span id="auto-cost">100</span>) +0.2g/s
+                    </button>
+                    <button id="btn-dry" onclick="Buydry()">
+                        🏭 Dry (Costo: <span id="dry-cost">1200</span>) +1g/s
+                    </button>
+                    <button id="btn-frozen" onclick="BuyfrozenCost()">
+                        ❄️ Frozen (Costo: <span id="frozen-cost">8000</span>) +4g/s
+                    </button>
+                    <button id="btn-spacciatore" onclick="buySpacciatore()">
+                        💊 THC (Costo: <span id="spacciatore-cost">40000</span>) +10g/s
+                    </button>
+                    <button id="btn-piantagione" onclick="buyPiantagione()">
+                        🌱 Hashish (Costo: <span id="piantagione-cost">300000</span>) +40g/s
+                    </button>
+                    <button id="btn-laboratorio" onclick="buyLaboratorio()">
+                        🧪 GHB (Costo: <span id="laboratorio-cost">3000000</span>) +200g/s
+                    </button>
+                    <button id="btn-cartel" onclick="buyCartel()">
+                        💼 Cartello (Costo: <span id="cartel-cost">30000000</span>) +1.200g/s
+                    </button>
+                    <button id="btn-narcosub" onclick="buyNarcosub()">
+                        🚢 DMT (Costo: <span id="narcosub-cost">350000000</span>) +8.000g/s
+                    </button>
+                    <button id="btn-chimica" onclick="buyChimica()">
+                        ☠️ Fentanyl (Costo: <span id="chimica-cost">5000000000</span>) +60.000g/s
+                    </button>
+
+                    <button id="btn-prestige" onclick="doPrestige()">
+                            🌌 Fai Prestigio (Richiede <span id="prestige-cost">500000</span>)
+                    </button>
+                </div>
+            </div>
+
+            <div id="page-upgrades" class="page">
+                <h2>Il Ghetto</h2>
+                <div class="info-box">
+                   Il ghetto ti offre potenziamenti enormi,si acquistano una sola volta e si perdono quando fai Prestigio.
+                </div>
+                <div class="shop">
+                    <button id="btn-upg1" class="upg-btn" onclick="buyUpgrade(1, 10000000)">🌿 Erba Premium (Click x2)</button>
+                    <button id="btn-upg2" class="upg-btn" onclick="buyUpgrade(2, 50000000)">❄️ Frozen Boost (BPS x2)</button>
+                    <button id="btn-upg3" class="upg-btn" onclick="buyUpgrade(3, 250000000)">💊 Pasticche (Click x3)</button>
+                    <button id="btn-upg4" class="upg-btn" onclick="buyUpgrade(4, 500000000)">🔥 Crack (BPS x3)</button>
+                    <button id="btn-upg5" class="upg-btn" onclick="buyUpgrade(5, 2000000000)">🍄 Funghi (Click x4)</button>
+                    <button id="btn-upg6" class="upg-btn" onclick="buyUpgrade(6, 5000000000)">💉 Eroina (BPS x4)</button>
+                    <button id="btn-upg7" class="upg-btn" onclick="buyUpgrade(7, 20000000000)">🧪 Metanfetamina (Click x5)</button>
+                    <button id="btn-upg8" class="upg-btn" onclick="buyUpgrade(8, 50000000000)">☠️ Fentanyl (BPS x5)</button>
+                    <button id="btn-upg9" class="upg-btn" onclick="buyUpgrade(9, 200000000000)">🌀 DMT (Click x6)</button>
+                    <button id="btn-upg10" class="upg-btn" onclick="buyUpgrade(10, 500000000000)">💀 Krokodil (BPS x6)</button>
+                </div>
+            </div>
+
+            <div id="page-permanent" class="page">
+                <h2>Potenziamenti Permanenti</h2>
+                <div class="info-box">
+                    Qui spendi gli Epstein Token per bonus permanenti che non si resetteranno con il prestigio.
+                </div>
+                <div class="shop">
+                    <button id="btn-perm1" class="upg-btn" onclick="buyPermanentUpgrade(1, 3)">🖱️ Click x2 (3 Token)</button>
+                    <button id="btn-perm2" class="upg-btn" onclick="buyPermanentUpgrade(2, 3)">🌿 BPS x2 (3 Token)</button>
+                    <button id="btn-perm3" class="upg-btn" onclick="buyPermanentUpgrade(3, 5)">✨ Prestigio x1.3 (5 Token)</button>
+                    <button id="btn-perm4" class="upg-btn" onclick="buyPermanentUpgrade(4, 8)">🌿 BPS x2 II (8 Token)</button>
+                    <button id="btn-perm5" class="upg-btn" onclick="buyPermanentUpgrade(5, 12)">⚡ Click x3 (12 Token)</button>
+                    <button id="btn-perm6" class="upg-btn" onclick="buyPermanentUpgrade(6, 15)">🏭 BPS x3 (15 Token)</button>
+                    <button id="btn-perm7" class="upg-btn" onclick="buyPermanentUpgrade(7, 25)">🎯 Click x5 (25 Token)</button>
+                    <button id="btn-perm8" class="upg-btn" onclick="buyPermanentUpgrade(8, 30)">🔥 BPS x5 (30 Token)</button>
+                    <button id="btn-perm9" class="upg-btn" onclick="buyPermanentUpgrade(9, 40)">₿ BTC Miner x2 (40 Token)</button>
+                    <button id="btn-perm10" class="upg-btn" onclick="buyPermanentUpgrade(10, 60)">🌌 Zanotti Sgravo Mode (Tutto x2) (60 Token)</button>
+                </div>
+            </div>
+
+            <div id="page-casino" class="page">
+                 <h2>Il Crazy Time!</h2>
+
+                <div class="wheel-container">
+                    <div class="pointer"></div>
+                    <div class="wheel" id="wheel"></div>
+                </div>
+
+                <div class="legend">
+                    <div><span class="color-box" style="background: #f44336;"></span> Sfortuna (Niente) - 40%</div>
+                    <div><span class="color-box" style="background: #2196F3;"></span> Triplica la Robba - 35%</div>
+                    <div><span class="color-box" style="background: #4CAF50;"></span> +25 Base per Click - 20%</div>
+                    <div><span class="color-box" style="background: #FFD700;"></span> <b>JACKPOT (+150 W/s) - 5%</b></div>
+                </div>
+
+                <div id="wheel-result" class="wheel-result">Risultato ruota: nessuna giocata ancora</div>
+
+                <div class="shop">
+                    <button id="btn-mystery" onclick="spinWheel()">
+                        🎡 Gira la Ruota (Costo: <span id="mystery-cost">1000</span>)
+                    </button>
+                </div>
+            </div>
+
+            <div id="page-battlepass" class="page">
+                <h2>Battle Pass Epstein</h2>
+                <div class="info-box">
+                    Spendi gli Epstein Tokens per sbloccare livelli e ricompense permanenti! Ogni livello costa di più.
+                </div>
+                <div class="battlepass-progress">
+                    <div>Livello Attuale: <span id="bp-level">0</span></div>
+                    <div>Costo Prossimo Livello: <span id="bp-next-cost">5</span> Tokens</div>
+                    <button id="btn-upgrade-bp" onclick="upgradeBattlePass()">Sblocca Livello</button>
+                </div>
+                <div class="battlepass-rewards">
+                    <h3>Ricompense Sbloccate:</h3>
+                    <ul id="bp-rewards-list"></ul>
+                </div>
+            </div>
+
+            <div id="page-blackjack" class="page">
+                <h2>🃏 Blackjack</h2>
+                <div class="info-box">
+                    Scommetti i tuoi Epstein Tokens!
+                </div>
+                <div class="blackjack-tokens">Token: <span id="bj-tokens">0</span></div>
+                <div class="blackjack-bet">
+                    <label>Scommessa: <input type="number" id="bj-bet-amount" min="1" value="1"></label>
+                    <button id="btn-start-bj" onclick="startBlackjack()">Nuova Partita</button>
+                </div>
+                <div class="blackjack-game">
+                    <div class="dealer">
+                        <h3>Dealer: <span id="dealer-score">0</span></h3>
+                        <div id="dealer-cards" class="cards"></div>
+                    </div>
+                    <div class="player">
+                        <h3>Tu: <span id="player-score">0</span></h3>
+                        <div id="player-cards" class="cards"></div>
+                    </div>
+                    <div class="blackjack-controls">
+                        <button id="btn-hit" onclick="hit()" disabled>Carta</button>
+                        <button id="btn-stand" onclick="stand()" disabled>Stai</button>
+                    </div>
+                    <div id="bj-result" class="bj-result"></div>
+                </div>
+            </div>
+
+            <div id="page-bitcoin" class="page">
+                <h2>₿ Bitcoin Market</h2>
+                <div class="info-box">
+                    Compra Miner per accumulare Bitcoin. Vendi i tuoi BTC per ottenere Epstein Token!<br>
+                    <strong>1 BTC = 10 Token</strong> al prezzo base × moltiplicatore di mercato attuale.<br>
+                    Il prezzo oscilla continuamente: vendi quando è alto! 📈
+                </div>
+
+                <div class="btc-stats">
+                    <div class="btc-stat-row">₿ Bitcoin: <span id="btc-balance">0.000</span></div>
+                    <div class="btc-stat-row">⛏️ Miner: <span id="btc-miners">0</span> (<span id="btc-rate">0.000</span> BTC/s)</div>
+                    <div class="btc-stat-row">📈 Prezzo BTC: <span id="btc-price-display">1.00</span>x <span id="btc-price-arrow">➡️</span></div>
+                    <div class="btc-stat-row">💰 Valore attuale: <span id="btc-value-display">0.000</span> Token se vendi ora</div>
+                </div>
+
+                <div class="btc-chart-container">
+                    <canvas id="btc-chart" width="340" height="180"></canvas>
+                </div>
+
+                <div class="shop">
+                    <button id="btn-buy-miner" onclick="buyBitcoinMiner()">
+                        ⛏️ Compra Miner (Costo: <span id="btc-miner-cost">1</span> Token) → +0.001 BTC/s
+                    </button>
+                    <button id="btn-sell-btc" onclick="sellBitcoin()" style="background-color:#f39c12;">
+                        💸 Vendi tutti i BTC → <span id="btc-sell-preview">0.000</span> Token
+                    </button>
+                </div>
+            </div>
+
+            <!-- AVIATOR PAGE -->
+            <div id="page-aviator" class="page">
+                <h2>✈️ Aviator</h2>
+                <div class="info-box">
+                    Scommetti i tuoi Bitcoin! Il moltiplicatore sale finché l'aereo non crasha. Incassa prima che esploda!
+                </div>
+
+                <!-- History bar -->
+                <div id="av-history" style="display:flex;gap:6px;overflow-x:auto;width:100%;padding:4px 0;scrollbar-width:none;margin-bottom:10px;"></div>
+
+                <!-- Sky canvas -->
+                <div id="av-game-area" style="position:relative;width:100%;height:200px;background:#0a0a12;border-radius:12px;overflow:hidden;margin-bottom:12px;">
+                    <canvas id="av-sky"></canvas>
+                    <div id="av-mult" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);font-family:monospace;font-size:48px;font-weight:900;color:#00e676;text-shadow:0 0 24px rgba(0,230,118,0.7);pointer-events:none;letter-spacing:2px;">1.00x</div>
+                    <div id="av-status" style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:12px;color:#666;pointer-events:none;white-space:nowrap;">IN ATTESA...</div>
+                    <div id="av-countdown" style="position:absolute;inset:0;background:rgba(10,10,18,0.85);display:flex;align-items:center;justify-content:center;border-radius:12px;z-index:10;">
+                        <div id="av-cdnum" style="font-family:monospace;font-size:64px;font-weight:900;color:#f9a825;text-shadow:0 0 30px rgba(249,168,37,0.8);">3</div>
+                    </div>
+                </div>
+
+                <!-- Stats row -->
+                <div style="display:flex;gap:8px;width:100%;margin-bottom:12px;">
+                    <div style="flex:1;background:#1a1a2e;border-radius:8px;padding:10px;text-align:center;">
+                        <div id="av-stat-btc" style="font-family:monospace;font-size:16px;font-weight:700;color:#f9a825;">0.000</div>
+                        <div style="font-size:10px;color:#666;">BTC TOTALI</div>
+                    </div>
+                    <div style="flex:1;background:#1a1a2e;border-radius:8px;padding:10px;text-align:center;">
+                        <div id="av-stat-won" style="font-family:monospace;font-size:16px;font-weight:700;color:#00e676;">0.000</div>
+                        <div style="font-size:10px;color:#666;">VINTI ₿</div>
+                    </div>
+                    <div style="flex:1;background:#1a1a2e;border-radius:8px;padding:10px;text-align:center;">
+                        <div id="av-stat-lost" style="font-family:monospace;font-size:16px;font-weight:700;color:#e63946;">0.000</div>
+                        <div style="font-size:10px;color:#666;">PERSI ₿</div>
+                    </div>
+                </div>
+
+                <!-- Bet controls -->
+                <div style="background:#1a1a2e;border-radius:12px;padding:14px;width:100%;box-sizing:border-box;">
+                    <div style="font-size:15px;color:#cbd5e1;letter-spacing:2px;margin-bottom:8px;">SCOMMESSA (BITCOIN)</div>
+                    <div style="display:flex;align-items:center;gap:10px;background:#0a0a12;border-radius:8px;padding:10px;margin-bottom:8px;">
+                        <input type="range" id="av-slider" min="1" max="100" value="10" step="1" oninput="avUpdateBetSlider()" style="-webkit-appearance:none;flex:1;height:4px;border-radius:2px;background:#333;outline:none;">
+                        <span id="av-bet-display" style="font-family:monospace;font-size:18px;font-weight:700;color:#f9a825;min-width:80px;text-align:right;">0.010 ₿</span>
+                    </div>
+                    <div style="display:flex;gap:6px;margin-bottom:10px;">
+                        <button onclick="avQuickBet(0.25)" style="flex:1;background:#0a0a12;color:#94a3b8;border:1px solid #333;padding:10px;border-radius:6px;font-size:15px;width:auto;margin:0;">x0.25</button>
+                        <button onclick="avQuickBet(0.5)"  style="flex:1;background:#0a0a12;color:#94a3b8;border:1px solid #333;padding:10px;border-radius:6px;font-size:15px;width:auto;margin:0;">x0.5</button>
+                        <button onclick="avQuickBet(1)"    style="flex:1;background:#0a0a12;color:#94a3b8;border:1px solid #333;padding:10px;border-radius:6px;font-size:15px;width:auto;margin:0;">ALL IN</button>
+                        <button onclick="avSetBet(0.001)"  style="flex:1;background:#0a0a12;color:#94a3b8;border:1px solid #333;padding:10px;border-radius:6px;font-size:15px;width:auto;margin:0;">MIN</button>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:8px;background:#0a0a12;border-radius:8px;padding:10px;margin-bottom:10px;">
+                        <span style="flex:1;font-size:16px;color:#cbd5e1;">Auto cash-out a:</span>
+                        <input type="number" id="av-auto" min="1.1" step="0.1" placeholder="—" style="background:transparent;border:none;color:#29b6f6;font-family:monospace;font-size:18px;font-weight:700;width:80px;outline:none;text-align:right;">
+                        <span style="color:#cbd5e1;font-size:16px;">x</span>
+                    </div>
+                    <button id="av-btn-main" onclick="avHandleBtn()" style="background:#00e676;color:#000;font-family:monospace;font-size:17px;font-weight:900;letter-spacing:2px;border:none;border-radius:10px;padding:14px;width:100%;cursor:pointer;">SCOMMETTI</button>
+                </div>
+
+                <div id="av-toast" style="display:none;background:#1a1a2e;border:2px solid #00e676;border-radius:10px;padding:10px 20px;font-family:monospace;font-size:15px;font-weight:700;color:#00e676;margin-top:10px;text-align:center;"></div>
+            </div>
+
+            <!-- AURA PRESTIGE PAGE -->
+            <div id="page-aura" class="page">
+                <h2 style="color:#f9a825;">🌟 Aura</h2>
+
+                <!-- STATUS -->
+                <div style="background:#1a0a2e;border:2px solid #f9a825;border-radius:14px;padding:16px;width:100%;box-sizing:border-box;margin-bottom:14px;">
+                    <div style="color:#f9a825;font-size:16px;font-weight:900;margin-bottom:10px;letter-spacing:2px;">📊 STATUS</div>
+                    <div style="color:#e0b0ff;font-size:14px;margin:5px 0;">🌟 Punti Aura: <strong style="color:#f9a825;" id="aura-pts-page">0</strong> ✦</div>
+                    <div style="color:#e0b0ff;font-size:14px;margin:5px 0;">🔁 Aura Prestige: <strong style="color:#f9a825;" id="aura-cnt-page">0</strong></div>
+                    <div style="color:#e0b0ff;font-size:14px;margin:5px 0;">⚡ Moltiplicatore base: <strong style="color:#00e676;" id="aura-mlt-page">x1</strong></div>
+                </div>
+
+                <!-- NEGOZIO PUNTI AURA -->
+                <div style="background:#0d0020;border:2px solid #8a2be2;border-radius:14px;padding:16px;width:100%;box-sizing:border-box;margin-bottom:14px;">
+                    <div style="color:#e0b0ff;font-size:18px;font-weight:900;margin-bottom:4px;letter-spacing:2px;">✦ NEGOZIO AURA</div>
+                    <div style="color:#94a3b8;font-size:15px;margin-bottom:12px;">Upgrade PERMANENTI — non si resettano mai, nemmeno con l'Aura Prestige</div>
+
+                    <button id="aura-shop-clickBoost" class="upg-btn" onclick="buyAuraUpgrade('clickBoost')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
+                    <button id="aura-shop-bpsBoost" class="upg-btn" onclick="buyAuraUpgrade('bpsBoost')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
+                    <button id="aura-shop-btcBoost" class="upg-btn" onclick="buyAuraUpgrade('btcBoost')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
+                    <button id="aura-shop-tokenInterval" class="upg-btn" onclick="buyAuraUpgrade('tokenInterval')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
+                    <button id="aura-shop-prestigeBonus" class="upg-btn" onclick="buyAuraUpgrade('prestigeBonus')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
+                    <button id="aura-shop-startMult" class="upg-btn" onclick="buyAuraUpgrade('startMult')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
+                </div>
+
+                <!-- COSTO PRESTIGE -->
+                <div style="background:#0d1b2a;border:2px solid #8a2be2;border-radius:14px;padding:18px;width:100%;box-sizing:border-box;margin-bottom:14px;">
+                    <div style="color:#8a2be2;font-size:18px;font-weight:900;margin-bottom:12px;letter-spacing:2px;">💸 COSTO AURA PRESTIGE</div>
+                    <div style="color:#ccc;font-size:16px;margin:6px 0;">🌿 Grammi: <strong style="color:#4CAF50;" id="aura-cost-grammi">200.000.000.000</strong></div>
+                    <div style="color:#ccc;font-size:16px;margin:6px 0;">🔷 Token: <strong style="color:#90caf9;" id="aura-cost-token">1.000</strong></div>
+                    <div style="color:#ccc;font-size:16px;margin:6px 0;">₿ BTC: <strong style="color:#f9a825;" id="aura-cost-btc">50</strong></div>
+                </div>
+
+                <div style="display:flex;gap:10px;margin-bottom:14px;">
+                    <div style="flex:1;background:#1a0a0a;border:1px solid #ff4444;border-radius:10px;padding:14px;">
+                        <div style="color:#ff4444;font-weight:bold;font-size:16px;margin-bottom:6px;">⚠️ PERDI</div>
+                        <div style="color:#cbd5e1;font-size:14px;line-height:1.7;">Grammi • BPS • Click<br>Upgrade permanenti<br>Token • BTC • Battle Pass</div>
+                    </div>
+                    <div style="flex:1;background:#0a2e0a;border:1px solid #00e676;border-radius:10px;padding:14px;">
+                        <div style="color:#00e676;font-weight:bold;font-size:16px;margin-bottom:6px;">✅ GUADAGNI</div>
+                        <div style="color:#cbd5e1;font-size:14px;line-height:1.7;">+10 Punti Aura (✦)<br>Mult base x10<br>Upgrade shop restano!</div>
+                    </div>
+                </div>
+
+                <button id="btn-aura-prestige" onclick="doAuraPrestige()" disabled
+                    style="background:linear-gradient(135deg,#8a2be2,#f9a825);color:white;font-size:17px;font-weight:900;letter-spacing:2px;padding:16px;border-radius:12px;border:none;width:100%;cursor:pointer;box-shadow:0 0 30px rgba(249,168,37,0.4);">
+                    🌟 ESEGUI AURA PRESTIGE
+                </button>
+            </div>
         </div>
     </div>
-
-    <div id="page-permanent" class="page">
-        <h2>Potenziamenti Permanenti</h2>
-        <div class="info-box">
-            Qui spendi gli Epstein Token per bonus permanenti che non si resetteranno con il prestigio.
-        </div>
-        <div class="shop">
-            <button id="btn-perm1" class="upg-btn" onclick="buyPermanentUpgrade(1, 3)">🖱️ Click x2 (3 Token)</button>
-            <button id="btn-perm2" class="upg-btn" onclick="buyPermanentUpgrade(2, 3)">🌿 BPS x2 (3 Token)</button>
-            <button id="btn-perm3" class="upg-btn" onclick="buyPermanentUpgrade(3, 5)">✨ Prestigio x1.3 (5 Token)</button>
-            <button id="btn-perm4" class="upg-btn" onclick="buyPermanentUpgrade(4, 8)">🌿 BPS x2 II (8 Token)</button>
-            <button id="btn-perm5" class="upg-btn" onclick="buyPermanentUpgrade(5, 12)">⚡ Click x3 (12 Token)</button>
-            <button id="btn-perm6" class="upg-btn" onclick="buyPermanentUpgrade(6, 15)">🏭 BPS x3 (15 Token)</button>
-            <button id="btn-perm7" class="upg-btn" onclick="buyPermanentUpgrade(7, 25)">🎯 Click x5 (25 Token)</button>
-            <button id="btn-perm8" class="upg-btn" onclick="buyPermanentUpgrade(8, 30)">🔥 BPS x5 (30 Token)</button>
-            <button id="btn-perm9" class="upg-btn" onclick="buyPermanentUpgrade(9, 40)">₿ BTC Miner x2 (40 Token)</button>
-            <button id="btn-perm10" class="upg-btn" onclick="buyPermanentUpgrade(10, 60)">🌌 Zanotti Sgravo Mode (Tutto x2) (60 Token)</button>
-        </div>
-    </div>
-
-    <div id="page-casino" class="page">
-         <h2>Il Crazy Time!</h2>
-
-        <div class="wheel-container">
-            <div class="pointer"></div>
-            <div class="wheel" id="wheel"></div>
-        </div>
-
-        <div class="legend">
-            <div><span class="color-box" style="background: #f44336;"></span> Sfortuna (Niente) - 40%</div>
-            <div><span class="color-box" style="background: #2196F3;"></span> Triplica la Robba - 35%</div>
-            <div><span class="color-box" style="background: #4CAF50;"></span> +25 Base per Click - 20%</div>
-            <div><span class="color-box" style="background: #FFD700;"></span> <b>JACKPOT (+150 W/s) - 5%</b></div>
-        </div>
-
-        <div id="wheel-result" class="wheel-result">Risultato ruota: nessuna giocata ancora</div>
-
-        <div class="shop">
-            <button id="btn-mystery" onclick="spinWheel()">
-                🎡 Gira la Ruota (Costo: <span id="mystery-cost">1000</span>)
-            </button>
-        </div>
-    </div>
-
-    <div id="page-battlepass" class="page">
-        <h2>Battle Pass Epstein</h2>
-        <div class="info-box">
-            Spendi gli Epstein Tokens per sbloccare livelli e ricompense permanenti! Ogni livello costa di più.
-        </div>
-        <div class="battlepass-progress">
-            <div>Livello Attuale: <span id="bp-level">0</span></div>
-            <div>Costo Prossimo Livello: <span id="bp-next-cost">5</span> Tokens</div>
-            <button id="btn-upgrade-bp" onclick="upgradeBattlePass()">Sblocca Livello</button>
-        </div>
-        <div class="battlepass-rewards">
-            <h3>Ricompense Sbloccate:</h3>
-            <ul id="bp-rewards-list"></ul>
-        </div>
-    </div>
-
-    <div id="page-blackjack" class="page">
-        <h2>🃏 Blackjack</h2>
-        <div class="info-box">
-            Scommetti i tuoi Epstein Tokens!
-        </div>
-        <div class="blackjack-tokens">Token: <span id="bj-tokens">0</span></div>
-        <div class="blackjack-bet">
-            <label>Scommessa: <input type="number" id="bj-bet-amount" min="1" value="1"></label>
-            <button id="btn-start-bj" onclick="startBlackjack()">Nuova Partita</button>
-        </div>
-        <div class="blackjack-game">
-            <div class="dealer">
-                <h3>Dealer: <span id="dealer-score">0</span></h3>
-                <div id="dealer-cards" class="cards"></div>
-            </div>
-            <div class="player">
-                <h3>Tu: <span id="player-score">0</span></h3>
-                <div id="player-cards" class="cards"></div>
-            </div>
-            <div class="blackjack-controls">
-                <button id="btn-hit" onclick="hit()" disabled>Carta</button>
-                <button id="btn-stand" onclick="stand()" disabled>Stai</button>
-            </div>
-            <div id="bj-result" class="bj-result"></div>
-        </div>
-    </div>
-
-    <div id="page-bitcoin" class="page">
-        <h2>₿ Bitcoin Market</h2>
-        <div class="info-box">
-            Compra Miner per accumulare Bitcoin. Vendi i tuoi BTC per ottenere Epstein Token!<br>
-            <strong>1 BTC = 10 Token</strong> al prezzo base × moltiplicatore di mercato attuale.<br>
-            Il prezzo oscilla continuamente: vendi quando è alto! 📈
-        </div>
-
-        <div class="btc-stats">
-            <div class="btc-stat-row">₿ Bitcoin: <span id="btc-balance">0.000</span></div>
-            <div class="btc-stat-row">⛏️ Miner: <span id="btc-miners">0</span> (<span id="btc-rate">0.000</span> BTC/s)</div>
-            <div class="btc-stat-row">📈 Prezzo BTC: <span id="btc-price-display">1.00</span>x <span id="btc-price-arrow">➡️</span></div>
-            <div class="btc-stat-row">💰 Valore attuale: <span id="btc-value-display">0.000</span> Token se vendi ora</div>
-        </div>
-
-        <div class="btc-chart-container">
-            <canvas id="btc-chart" width="340" height="180"></canvas>
-        </div>
-
-        <div class="shop">
-            <button id="btn-buy-miner" onclick="buyBitcoinMiner()">
-                ⛏️ Compra Miner (Costo: <span id="btc-miner-cost">1</span> Token) → +0.001 BTC/s
-            </button>
-            <button id="btn-sell-btc" onclick="sellBitcoin()" style="background-color:#f39c12;">
-                💸 Vendi tutti i BTC → <span id="btc-sell-preview">0.000</span> Token
-            </button>
-        </div>
-    </div>
-
-    <!-- AVIATOR PAGE -->
-    <div id="page-aviator" class="page">
-        <h2>✈️ Aviator</h2>
-        <div class="info-box">
-            Scommetti i tuoi Bitcoin! Il moltiplicatore sale finché l'aereo non crasha. Incassa prima che esploda!
-        </div>
-
-        <!-- History bar -->
-        <div id="av-history" style="display:flex;gap:6px;overflow-x:auto;width:100%;padding:4px 0;scrollbar-width:none;margin-bottom:10px;"></div>
-
-        <!-- Sky canvas -->
-        <div id="av-game-area" style="position:relative;width:100%;height:200px;background:#0a0a12;border-radius:12px;overflow:hidden;margin-bottom:12px;">
-            <canvas id="av-sky"></canvas>
-            <div id="av-mult" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-55%);font-family:monospace;font-size:48px;font-weight:900;color:#00e676;text-shadow:0 0 24px rgba(0,230,118,0.7);pointer-events:none;letter-spacing:2px;">1.00x</div>
-            <div id="av-status" style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:12px;color:#666;pointer-events:none;white-space:nowrap;">IN ATTESA...</div>
-            <div id="av-countdown" style="position:absolute;inset:0;background:rgba(10,10,18,0.85);display:flex;align-items:center;justify-content:center;border-radius:12px;z-index:10;">
-                <div id="av-cdnum" style="font-family:monospace;font-size:64px;font-weight:900;color:#f9a825;text-shadow:0 0 30px rgba(249,168,37,0.8);">3</div>
-            </div>
-        </div>
-
-        <!-- Stats row -->
-        <div style="display:flex;gap:8px;width:100%;margin-bottom:12px;">
-            <div style="flex:1;background:#1a1a2e;border-radius:8px;padding:10px;text-align:center;">
-                <div id="av-stat-btc" style="font-family:monospace;font-size:16px;font-weight:700;color:#f9a825;">0.000</div>
-                <div style="font-size:10px;color:#666;">BTC TOTALI</div>
-            </div>
-            <div style="flex:1;background:#1a1a2e;border-radius:8px;padding:10px;text-align:center;">
-                <div id="av-stat-won" style="font-family:monospace;font-size:16px;font-weight:700;color:#00e676;">0.000</div>
-                <div style="font-size:10px;color:#666;">VINTI ₿</div>
-            </div>
-            <div style="flex:1;background:#1a1a2e;border-radius:8px;padding:10px;text-align:center;">
-                <div id="av-stat-lost" style="font-family:monospace;font-size:16px;font-weight:700;color:#e63946;">0.000</div>
-                <div style="font-size:10px;color:#666;">PERSI ₿</div>
-            </div>
-        </div>
-
-        <!-- Bet controls -->
-        <div style="background:#1a1a2e;border-radius:12px;padding:14px;width:100%;box-sizing:border-box;">
-            <div style="font-size:11px;color:#666;letter-spacing:2px;margin-bottom:8px;">SCOMMESSA (BITCOIN)</div>
-            <div style="display:flex;align-items:center;gap:10px;background:#0a0a12;border-radius:8px;padding:10px;margin-bottom:8px;">
-                <input type="range" id="av-slider" min="1" max="100" value="10" step="1" oninput="avUpdateBetSlider()" style="-webkit-appearance:none;flex:1;height:4px;border-radius:2px;background:#333;outline:none;">
-                <span id="av-bet-display" style="font-family:monospace;font-size:15px;font-weight:700;color:#f9a825;min-width:80px;text-align:right;">0.010 ₿</span>
-            </div>
-            <div style="display:flex;gap:6px;margin-bottom:10px;">
-                <button onclick="avQuickBet(0.25)" style="flex:1;background:#0a0a12;color:#888;border:1px solid #333;padding:6px;border-radius:6px;font-size:11px;width:auto;margin:0;">x0.25</button>
-                <button onclick="avQuickBet(0.5)"  style="flex:1;background:#0a0a12;color:#888;border:1px solid #333;padding:6px;border-radius:6px;font-size:11px;width:auto;margin:0;">x0.5</button>
-                <button onclick="avQuickBet(1)"    style="flex:1;background:#0a0a12;color:#888;border:1px solid #333;padding:6px;border-radius:6px;font-size:11px;width:auto;margin:0;">ALL IN</button>
-                <button onclick="avSetBet(0.001)"  style="flex:1;background:#0a0a12;color:#888;border:1px solid #333;padding:6px;border-radius:6px;font-size:11px;width:auto;margin:0;">MIN</button>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px;background:#0a0a12;border-radius:8px;padding:10px;margin-bottom:10px;">
-                <span style="flex:1;font-size:12px;color:#666;">Auto cash-out a:</span>
-                <input type="number" id="av-auto" min="1.1" step="0.1" placeholder="—" style="background:transparent;border:none;color:#29b6f6;font-family:monospace;font-size:15px;font-weight:700;width:70px;outline:none;text-align:right;">
-                <span style="color:#666;font-size:13px;">x</span>
-            </div>
-            <button id="av-btn-main" onclick="avHandleBtn()" style="background:#00e676;color:#000;font-family:monospace;font-size:17px;font-weight:900;letter-spacing:2px;border:none;border-radius:10px;padding:14px;width:100%;cursor:pointer;">SCOMMETTI</button>
-        </div>
-
-        <div id="av-toast" style="display:none;background:#1a1a2e;border:2px solid #00e676;border-radius:10px;padding:10px 20px;font-family:monospace;font-size:15px;font-weight:700;color:#00e676;margin-top:10px;text-align:center;"></div>
-    </div>
-
-    <!-- AURA PRESTIGE PAGE -->
-    <div id="page-aura" class="page">
-        <h2 style="color:#f9a825;">🌟 Aura</h2>
-
-        <!-- STATUS -->
-        <div style="background:#1a0a2e;border:2px solid #f9a825;border-radius:14px;padding:16px;width:100%;box-sizing:border-box;margin-bottom:14px;">
-            <div style="color:#f9a825;font-size:16px;font-weight:900;margin-bottom:10px;letter-spacing:2px;">📊 STATUS</div>
-            <div style="color:#e0b0ff;font-size:14px;margin:5px 0;">🌟 Punti Aura: <strong style="color:#f9a825;" id="aura-pts-page">0</strong> ✦</div>
-            <div style="color:#e0b0ff;font-size:14px;margin:5px 0;">🔁 Aura Prestige: <strong style="color:#f9a825;" id="aura-cnt-page">0</strong></div>
-            <div style="color:#e0b0ff;font-size:14px;margin:5px 0;">⚡ Moltiplicatore base: <strong style="color:#00e676;" id="aura-mlt-page">x1</strong></div>
-        </div>
-
-        <!-- NEGOZIO PUNTI AURA -->
-        <div style="background:#0d0020;border:2px solid #8a2be2;border-radius:14px;padding:16px;width:100%;box-sizing:border-box;margin-bottom:14px;">
-            <div style="color:#e0b0ff;font-size:16px;font-weight:900;margin-bottom:4px;letter-spacing:2px;">✦ NEGOZIO AURA</div>
-            <div style="color:#666;font-size:11px;margin-bottom:12px;">Upgrade PERMANENTI — non si resettano mai, nemmeno con l'Aura Prestige</div>
-
-            <button id="aura-shop-clickBoost" class="upg-btn" onclick="buyAuraUpgrade('clickBoost')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
-            <button id="aura-shop-bpsBoost" class="upg-btn" onclick="buyAuraUpgrade('bpsBoost')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
-            <button id="aura-shop-btcBoost" class="upg-btn" onclick="buyAuraUpgrade('btcBoost')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
-            <button id="aura-shop-tokenInterval" class="upg-btn" onclick="buyAuraUpgrade('tokenInterval')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
-            <button id="aura-shop-prestigeBonus" class="upg-btn" onclick="buyAuraUpgrade('prestigeBonus')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
-            <button id="aura-shop-startMult" class="upg-btn" onclick="buyAuraUpgrade('startMult')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
-        </div>
-
-        <!-- COSTO PRESTIGE -->
-        <div style="background:#0d1b2a;border:2px solid #8a2be2;border-radius:14px;padding:16px;width:100%;box-sizing:border-box;margin-bottom:14px;">
-            <div style="color:#8a2be2;font-size:15px;font-weight:900;margin-bottom:12px;letter-spacing:2px;">💸 COSTO AURA PRESTIGE</div>
-            <div style="color:#ccc;font-size:13px;margin:6px 0;">🌿 Grammi: <strong style="color:#4CAF50;" id="aura-cost-grammi">200.000.000.000</strong></div>
-            <div style="color:#ccc;font-size:13px;margin:6px 0;">🔷 Token: <strong style="color:#90caf9;" id="aura-cost-token">1.000</strong></div>
-            <div style="color:#ccc;font-size:13px;margin:6px 0;">₿ BTC: <strong style="color:#f9a825;" id="aura-cost-btc">50</strong></div>
-        </div>
-
-        <div style="display:flex;gap:10px;margin-bottom:14px;">
-            <div style="flex:1;background:#1a0a0a;border:1px solid #ff4444;border-radius:10px;padding:12px;">
-                <div style="color:#ff4444;font-weight:bold;font-size:12px;margin-bottom:6px;">⚠️ PERDI</div>
-                <div style="color:#888;font-size:11px;line-height:1.7;">Grammi • BPS • Click<br>Upgrade permanenti<br>Token • BTC • Battle Pass</div>
-            </div>
-            <div style="flex:1;background:#0a2e0a;border:1px solid #00e676;border-radius:10px;padding:12px;">
-                <div style="color:#00e676;font-weight:bold;font-size:12px;margin-bottom:6px;">✅ GUADAGNI</div>
-                <div style="color:#888;font-size:11px;line-height:1.7;">+10 Punti Aura (✦)<br>Mult base x10<br>Upgrade shop restano!</div>
-            </div>
-        </div>
-
-        <button id="btn-aura-prestige" onclick="doAuraPrestige()" disabled
-            style="background:linear-gradient(135deg,#8a2be2,#f9a825);color:white;font-size:17px;font-weight:900;letter-spacing:2px;padding:16px;border-radius:12px;border:none;width:100%;cursor:pointer;box-shadow:0 0 30px rgba(249,168,37,0.4);">
-            🌟 ESEGUI AURA PRESTIGE
-        </button>
-        </div>
-
 </div>
 
-<div id="save-notification" style="opacity:0; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 20px; font-size: 14px; pointer-events:none; z-index:1000;">Salvataggio effettuato!</div>
-
-<div class="options">
-    <button onclick="saveGame()">💾 Salva Ora</button>
-    <button id="btn-reset" onclick="resetGame()">🗑️ Azzera Dati</button>
-</div>
+<div id="save-notification" style="opacity:0; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(16, 185, 129, 0.9); color: white; padding: 12px 24px; border-radius: 30px; font-size: 15px; pointer-events:none; z-index:1000; font-weight:600;">Salvataggio effettuato!</div>
 
 
 <script src="script.js"></script>
