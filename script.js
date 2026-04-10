@@ -80,15 +80,22 @@ let auraPoints = 0;
 let auraPrestigeCount = 0;
 let auraCostGrammi = 200_000_000_000;  // 200 miliardi, poi x50 ogni volta
 let auraCostToken  = 1_000;
-let auraCostBtc    = 50;
 let auraBaseMultiplier = 1;
+
+// --- BITCOIN CLICK UPGRADES ---
+let btcClickUpgrade1 = false; // +50 click base
+let btcClickUpgrade2 = false; // Click x1.5 permanente
+let btcClickUpgrade3 = false; // +200 click base
+let btcClickUpgrade4 = false; // Click x2 permanente
+let btcClickUpgrade5 = false; // +1000 click base
+let btcClickUpgrade6 = false; // Click x5 permanente
+let btcClickMultiplier = 1;   // moltiplicatore cumulativo BTC click
 
 // --- NEGOZIO AURA (upgrade con Punti Aura, NON resettano mai) ---
 let auraShop = {
   clickBoost:    1,   // moltiplicatore click aura shop
   bpsBoost:      1,   // moltiplicatore BPS aura shop
   btcBoost:      1,   // moltiplicatore BTC aura shop
-  tokenInterval: 10,  // ogni quanti secondi produci 1 token (si abbassa)
   prestigeBonus: 0,   // token extra per ogni prestige
   startMult:     1,   // moltiplicatore che parte dall'inizio dopo aura prestige
 };
@@ -97,7 +104,6 @@ let auraShopCosts = {
   clickBoost:    3,
   bpsBoost:      3,
   btcBoost:      5,
-  tokenInterval: 8,
   prestigeBonus: 10,
   startMult:     15,
 };
@@ -130,7 +136,7 @@ function getEffClick() {
   if (hasUpgrade7) multiplier *= 5;
   if (hasUpgrade9) multiplier *= 6;
   const effectivePrestige = prestigeMultiplier * permanentPrestigeMultiplier;
-  return clickPower * multiplier * effectivePrestige * permanentClickMultiplier * auraBaseMultiplier * auraShop.clickBoost;
+  return clickPower * multiplier * effectivePrestige * permanentClickMultiplier * auraBaseMultiplier * auraShop.clickBoost * btcClickMultiplier;
 }
 
 function getEffBps() {
@@ -169,8 +175,13 @@ function saveGame() {
     prestigeTokenMultiplier: prestigeTokenMultiplier,
     btcBalance: btcBalance, btcMiners: btcMiners, btcMinerCost: btcMinerCost,
     auraPoints: auraPoints, auraPrestigeCount: auraPrestigeCount, auraBaseMultiplier: auraBaseMultiplier,
-    auraCostGrammi: auraCostGrammi, auraCostToken: auraCostToken, auraCostBtc: auraCostBtc,
-    auraShop: JSON.stringify(auraShop), auraShopCosts: JSON.stringify(auraShopCosts)
+    auraCostGrammi: auraCostGrammi, auraCostToken: auraCostToken,
+    auraShop: JSON.stringify(auraShop), auraShopCosts: JSON.stringify(auraShopCosts),
+    btcClickUpgrade1: btcClickUpgrade1, btcClickUpgrade2: btcClickUpgrade2,
+    btcClickUpgrade3: btcClickUpgrade3, btcClickUpgrade4: btcClickUpgrade4,
+    btcClickUpgrade5: btcClickUpgrade5, btcClickUpgrade6: btcClickUpgrade6,
+    btcClickMultiplier: btcClickMultiplier,
+    btcClickState: JSON.stringify(btcClickState)
   };
   localStorage.setItem("IlGiroSave", JSON.stringify(gameSave));
   saveNotification.style.opacity = 1;
@@ -241,12 +252,21 @@ function loadGame() {
     if (typeof savedGame.auraBaseMultiplier !== "undefined") auraBaseMultiplier = savedGame.auraBaseMultiplier;
     if (typeof savedGame.auraCostGrammi !== "undefined") auraCostGrammi = savedGame.auraCostGrammi;
     if (typeof savedGame.auraCostToken !== "undefined") auraCostToken = savedGame.auraCostToken;
-    if (typeof savedGame.auraCostBtc !== "undefined") auraCostBtc = savedGame.auraCostBtc;
     if (typeof savedGame.auraShop !== "undefined") {
       try { Object.assign(auraShop, JSON.parse(savedGame.auraShop)); } catch(e) {}
     }
     if (typeof savedGame.auraShopCosts !== "undefined") {
       try { Object.assign(auraShopCosts, JSON.parse(savedGame.auraShopCosts)); } catch(e) {}
+    }
+    if (typeof savedGame.btcClickUpgrade1 !== "undefined") btcClickUpgrade1 = savedGame.btcClickUpgrade1;
+    if (typeof savedGame.btcClickUpgrade2 !== "undefined") btcClickUpgrade2 = savedGame.btcClickUpgrade2;
+    if (typeof savedGame.btcClickUpgrade3 !== "undefined") btcClickUpgrade3 = savedGame.btcClickUpgrade3;
+    if (typeof savedGame.btcClickUpgrade4 !== "undefined") btcClickUpgrade4 = savedGame.btcClickUpgrade4;
+    if (typeof savedGame.btcClickUpgrade5 !== "undefined") btcClickUpgrade5 = savedGame.btcClickUpgrade5;
+    if (typeof savedGame.btcClickUpgrade6 !== "undefined") btcClickUpgrade6 = savedGame.btcClickUpgrade6;
+    if (typeof savedGame.btcClickMultiplier !== "undefined") btcClickMultiplier = savedGame.btcClickMultiplier;
+    if (typeof savedGame.btcClickState !== "undefined") {
+      try { Object.assign(btcClickState, JSON.parse(savedGame.btcClickState)); } catch(e) {}
     }
   }
 }
@@ -466,9 +486,8 @@ function doPrestige() {
 function doAuraPrestige() {
   if (score < auraCostGrammi) { alert(`❌ Ti mancano i Grammi! Servono ${formatNum(auraCostGrammi)} grammi.`); return; }
   if (epsteinTokens < auraCostToken) { alert(`❌ Ti mancano gli Epstein Token! Servono ${formatNum(auraCostToken)} Token.`); return; }
-  if (btcBalance < auraCostBtc) { alert(`❌ Ti mancano i Bitcoin! Servono ${auraCostBtc} BTC.`); return; }
 
-  if (!confirm(`⚠️ AURA PRESTIGE ⚠️\n\nQuesta azione azzera TUTTO:\n• Grammi, click, BPS\n• Tutti gli upgrade (anche permanenti)\n• Token, BTC, Miner\n• Battle Pass\n• Moltiplicatore Prestigio\n\nIn cambio ricevi:\n• +10 Punti Aura\n• Moltiplicatore base x10 (permanente)\n\nI prossimi costi saranno:\n• Grammi: ${formatNum(auraCostGrammi * 50)}\n• Token: ${formatNum(Math.floor(auraCostToken * 1.2))}\n• BTC: ${(auraCostBtc * 1.2).toFixed(1)}\n\nSei sicuro?`)) return;
+  if (!confirm(`⚠️ AURA PRESTIGE ⚠️\n\nQuesta azione azzera TUTTO:\n• Grammi, click, BPS\n• Tutti gli upgrade (anche permanenti)\n• Token, BTC, Miner\n• Battle Pass\n• Moltiplicatore Prestigio\n\nIn cambio ricevi:\n• +10 Punti Aura\n• +10 al Moltiplicatore Aura base (permanente)\n• Prossimo Prestigio darà x2 Token\n\nI prossimi costi saranno:\n• Grammi: ${formatNum(auraCostGrammi * 50)}\n• Token: ${formatNum(Math.floor(auraCostToken * 1.2))}\n\nSei sicuro?`)) return;
 
   // ── RESET COMPLETO ──
   score = 0; clickPower = 1; autoClickBPS = 0;
@@ -491,7 +510,7 @@ function doAuraPrestige() {
   cartelCount = 0; cartelCurrentCost = cartelBaseCost;
   narcosubCount = 0; narcosubCurrentCost = narcosubBaseCost;
   chimicaCount = 0; chimicaCurrentCost = chimicaBaseCost;
-  prestigeTokenMultiplier = 1;
+  prestigeTokenMultiplier = 1;  // reset: il prossimo prestige ripartirà da x2
 
   epsteinTokens = 0; btcBalance = 0; btcMiners = 0; btcMinerCost = 1;
 
@@ -499,18 +518,17 @@ function doAuraPrestige() {
   battlePassLevel = 0;
   updateBattlePassDisplay();
 
-  // ── SCALA I COSTI DEL PROSSIMO AURA PRESTIGE (x2 ogni volta) ──
+  // ── SCALA I COSTI DEL PROSSIMO AURA PRESTIGE ──
   auraCostGrammi *= 50;
   auraCostToken   = Math.floor(auraCostToken * 1.2);
-  auraCostBtc     = parseFloat((auraCostBtc * 1.2).toFixed(1));
 
   // ── RICOMPENSA AURA ──
   auraPrestigeCount++;
   const pointsGained = 10 + auraShop.prestigeBonus;
   auraPoints += pointsGained;
-  auraBaseMultiplier *= 10;
+  auraBaseMultiplier += 10;  // +10 ad ogni aura prestige (non x10)
 
-  alert(`✨ AURA PRESTIGE COMPLETATO! ✨\n\nHai guadagnato ${pointsGained} Punti Aura!\nTotale: ${auraPoints} Punti Aura\nMoltiplicatore base: x${auraBaseMultiplier.toLocaleString()}\n\nProssimo Aura Prestige costerà:\n• ${formatNum(auraCostGrammi)} Grammi\n• ${formatNum(auraCostToken)} Token\n• ${auraCostBtc} BTC\n\nRicomincia da zero… ma 10 volte più forte!`);
+  alert(`✨ AURA PRESTIGE COMPLETATO! ✨\n\nHai guadagnato ${pointsGained} Punti Aura!\nTotale: ${auraPoints} Punti Aura\nMoltiplicatore base: +10 → ora ${auraBaseMultiplier}\n\nProssimo Aura Prestige costerà:\n• ${formatNum(auraCostGrammi)} Grammi\n• ${formatNum(auraCostToken)} Token\n\nRicomincia da zero… ma più forte!`);
   updateDisplay(); updateBtcDisplay(); updateAuraDisplay(); saveGame(); switchPage('forno');
 }
 
@@ -532,10 +550,6 @@ function buyAuraUpgrade(key) {
     case 'btcBoost':
       auraShop.btcBoost *= 2;
       auraShopCosts.btcBoost = Math.ceil(auraShopCosts.btcBoost * 2.5);
-      break;
-    case 'tokenInterval':
-      auraShop.tokenInterval = Math.max(1, Math.floor(auraShop.tokenInterval * 0.6));
-      auraShopCosts.tokenInterval = Math.ceil(auraShopCosts.tokenInterval * 2.5);
       break;
     case 'prestigeBonus':
       auraShop.prestigeBonus += 3;
@@ -562,28 +576,25 @@ function updateAuraDisplay() {
   // Status page
   set('aura-pts-page',  auraPoints);
   set('aura-cnt-page',  auraPrestigeCount);
-  set('aura-mlt-page',  'x' + auraBaseMultiplier.toLocaleString());
+  set('aura-mlt-page',  auraBaseMultiplier.toLocaleString());
 
   // Costi prestige dinamici
   const cG = document.getElementById('aura-cost-grammi');
   if (cG) cG.textContent = formatNum(auraCostGrammi);
   const cT = document.getElementById('aura-cost-token');
   if (cT) cT.textContent = formatNum(auraCostToken);
-  const cB = document.getElementById('aura-cost-btc');
-  if (cB) cB.textContent = auraCostBtc;
 
-  // Bottone prestige
+  // Bottone prestige (solo grammi e token, no BTC)
   const btn = document.getElementById('btn-aura-prestige');
-  if (btn) btn.disabled = !(score >= auraCostGrammi && epsteinTokens >= auraCostToken && btcBalance >= auraCostBtc);
+  if (btn) btn.disabled = !(score >= auraCostGrammi && epsteinTokens >= auraCostToken);
 
   // Negozio Aura — aggiorna ogni bottone
   const shopDefs = [
-    { key:'clickBoost',    icon:'⚡', label:'Click x2',              desc:`Attuale: x${auraShop.clickBoost}` },
-    { key:'bpsBoost',      icon:'🌿', label:'BPS x2',               desc:`Attuale: x${auraShop.bpsBoost}` },
-    { key:'btcBoost',      icon:'₿',  label:'BTC Mining x2',        desc:`Attuale: x${auraShop.btcBoost}` },
-    { key:'tokenInterval', icon:'🔷', label:'Token più veloci',      desc:`Attuale: 1 ogni ${auraShop.tokenInterval}s` },
-    { key:'prestigeBonus', icon:'✨', label:'+3 Token per Prestigio',desc:`Attuale: +${auraShop.prestigeBonus}/prestige` },
-    { key:'startMult',     icon:'🚀', label:'Partenza Potenziata x2',desc:`Attuale: x${auraShop.startMult} al reset` },
+    { key:'clickBoost',    icon:'⚡', label:'Click x2',               desc:`Attuale: x${auraShop.clickBoost}` },
+    { key:'bpsBoost',      icon:'🌿', label:'BPS x2',                desc:`Attuale: x${auraShop.bpsBoost}` },
+    { key:'btcBoost',      icon:'₿',  label:'BTC Mining x2',         desc:`Attuale: x${auraShop.btcBoost}` },
+    { key:'prestigeBonus', icon:'✨', label:'+3 Token per Prestigio', desc:`Attuale: +${auraShop.prestigeBonus}/prestige` },
+    { key:'startMult',     icon:'🚀', label:'Partenza Potenziata x2', desc:`Attuale: x${auraShop.startMult} al reset` },
   ];
   shopDefs.forEach(def => {
     const cost = auraShopCosts[def.key];
@@ -592,6 +603,56 @@ function updateAuraDisplay() {
     const canAfford = auraPoints >= cost;
     btnEl.disabled = !canAfford;
     btnEl.innerHTML = `${def.icon} ${def.label}<br><small style="font-weight:normal;opacity:0.8">${def.desc}</small><br><small style="color:#f9a825">Costo: ${cost} ✦</small>`;
+  });
+}
+
+// --- BTC CLICK UPGRADES ---
+const btcClickDefs = [
+  { id: 1, key: 'btcClickUpgrade1', icon: '⚡', label: '+50 Click Base',        cost: 0.05,  effect: () => { clickPower += 50; } },
+  { id: 2, key: 'btcClickUpgrade2', icon: '🔥', label: 'Click x1.5 Permanente', cost: 0.15,  effect: () => { btcClickMultiplier *= 1.5; } },
+  { id: 3, key: 'btcClickUpgrade3', icon: '⚡', label: '+200 Click Base',        cost: 0.5,   effect: () => { clickPower += 200; } },
+  { id: 4, key: 'btcClickUpgrade4', icon: '🔥', label: 'Click x2 Permanente',   cost: 1.5,   effect: () => { btcClickMultiplier *= 2; } },
+  { id: 5, key: 'btcClickUpgrade5', icon: '⚡', label: '+1000 Click Base',       cost: 5,     effect: () => { clickPower += 1000; } },
+  { id: 6, key: 'btcClickUpgrade6', icon: '🌌', label: 'Click x5 Permanente',   cost: 15,    effect: () => { btcClickMultiplier *= 5; } },
+];
+
+const btcClickState = {
+  btcClickUpgrade1: false,
+  btcClickUpgrade2: false,
+  btcClickUpgrade3: false,
+  btcClickUpgrade4: false,
+  btcClickUpgrade5: false,
+  btcClickUpgrade6: false,
+};
+
+function buyBtcClickUpgrade(id) {
+  const def = btcClickDefs.find(d => d.id === id);
+  if (!def) return;
+  if (btcClickState[def.key]) return;
+  if (btcBalance < def.cost) return;
+  btcBalance -= def.cost;
+  btcClickState[def.key] = true;
+  def.effect();
+  updateDisplay();
+  updateBtcDisplay();
+  updateBtcClickShopDisplay();
+  saveGame();
+}
+
+function updateBtcClickShopDisplay() {
+  btcClickDefs.forEach(def => {
+    const btn = document.getElementById(`btc-click-upg-${def.id}`);
+    if (!btn) return;
+    const bought = btcClickState[def.key];
+    if (bought) {
+      btn.textContent = `✅ ${def.icon} ${def.label} (Acquistato)`;
+      btn.classList.add('bought');
+      btn.disabled = true;
+    } else {
+      btn.innerHTML = `${def.icon} ${def.label}<br><small style="color:#f9a825;font-weight:normal">Costo: ${def.cost} ₿</small>`;
+      btn.classList.remove('bought');
+      btn.disabled = btcBalance < def.cost;
+    }
   });
 }
 
@@ -760,7 +821,7 @@ function updateDisplay() {
 
   // Aura shop boost nella top bar
   const auraShopEl = document.getElementById('topbar-aura-shop');
-  if (auraShopEl) auraShopEl.textContent = `Click x${auraShop.clickBoost} | BPS x${auraShop.bpsBoost} | BTC x${auraShop.btcBoost} | Token ogni ${auraShop.tokenInterval}s`;
+  if (auraShopEl) auraShopEl.textContent = `Click x${auraShop.clickBoost} | BPS x${auraShop.bpsBoost} | BTC x${auraShop.btcBoost} | BTC Click x${btcClickMultiplier}`;
 
   document.getElementById('click-cost').textContent = formatNum(clickUpgradeCost);
   document.getElementById('auto-cost').textContent = formatNum(autoClickerCost);
@@ -812,16 +873,16 @@ function updateDisplay() {
     }
   }
 
-  setUpgBtnState(btnUpg1,                                  hasUpgrade1,  10000000,   "🌿 Erba Premium (Click x2)");
-  setUpgBtnState(btnUpg2,                                  hasUpgrade2,  50000000,   "❄️ Frozen Boost (BPS x2)");
-  setUpgBtnState(btnUpg3,                                  hasUpgrade3,  250000000,  "💊 Pasticche (Click x3)");
-  setUpgBtnState(btnUpg4,                                  hasUpgrade4,  500000000,  "🔥 Crack (BPS x3)");
-  setUpgBtnState(document.getElementById('btn-upg5'),      hasUpgrade5,  2000000000, "🍄 Funghi (Click x4)");
-  setUpgBtnState(document.getElementById('btn-upg6'),      hasUpgrade6,  5000000000, "💉 Eroina (BPS x4)");
-  setUpgBtnState(document.getElementById('btn-upg7'),      hasUpgrade7,  20000000000,"🧪 Metanfetamina (Click x5)");
-  setUpgBtnState(document.getElementById('btn-upg8'),      hasUpgrade8,  50000000000,"☠️ Fentanyl (BPS x5)");
-  setUpgBtnState(document.getElementById('btn-upg9'),      hasUpgrade9,  200000000000,"🌀 DMT (Click x6)");
-  setUpgBtnState(document.getElementById('btn-upg10'),     hasUpgrade10, 500000000000,"💀 Krokodil (BPS x6)");
+  setUpgBtnState(btnUpg1,                                  hasUpgrade1,  5_000_000,    "🌿 Erba Premium (Click x2)");
+  setUpgBtnState(btnUpg2,                                  hasUpgrade2,  15_000_000,   "❄️ Frozen Boost (BPS x2)");
+  setUpgBtnState(btnUpg3,                                  hasUpgrade3,  60_000_000,   "💊 Pasticche (Click x3)");
+  setUpgBtnState(btnUpg4,                                  hasUpgrade4,  150_000_000,  "🔥 Crack (BPS x3)");
+  setUpgBtnState(document.getElementById('btn-upg5'),      hasUpgrade5,  500_000_000,  "🍄 Funghi (Click x4)");
+  setUpgBtnState(document.getElementById('btn-upg6'),      hasUpgrade6,  1_200_000_000,"💉 Eroina (BPS x4)");
+  setUpgBtnState(document.getElementById('btn-upg7'),      hasUpgrade7,  4_000_000_000,"🧪 Metanfetamina (Click x5)");
+  setUpgBtnState(document.getElementById('btn-upg8'),      hasUpgrade8,  10_000_000_000,"☠️ Fentanyl (BPS x5)");
+  setUpgBtnState(document.getElementById('btn-upg9'),      hasUpgrade9,  35_000_000_000,"🌀 DMT (Click x6)");
+  setUpgBtnState(document.getElementById('btn-upg10'),     hasUpgrade10, 100_000_000_000,"💀 Krokodil (BPS x6)");
 
   function setPermanentBtnState(btn, hasBought, cost, title) {
     if (hasBought) {
@@ -1050,6 +1111,8 @@ function updateBtcDisplay() {
   const el = id => document.getElementById(id);
   if (!el('btc-balance')) return;
   el('btc-balance').textContent = btcBalance.toFixed(3);
+  const shopBal = document.getElementById('btcshop-balance');
+  if (shopBal) shopBal.textContent = btcBalance.toFixed(3);
   el('btc-miners').textContent = btcMiners;
   el('btc-rate').textContent = (btcMiners * 0.001 * permanentBtcMultiplier).toFixed(3);
   el('btc-price-display').textContent = btcPriceMultiplier.toFixed(2);
@@ -1065,6 +1128,7 @@ function updateBtcDisplay() {
   const sellBtn = el('btn-sell-btc');
   if (sellBtn) sellBtn.disabled = btcBalance <= 0;
   drawBtcChart();
+  updateBtcClickShopDisplay();
 }
 
 // --- INIZIALIZZAZIONE
@@ -1074,6 +1138,7 @@ updateBattlePassDisplay();
 initBtcChart();
 updateBtcDisplay();
 updateAuraDisplay();
+updateBtcClickShopDisplay();
 
 setInterval(function() {
   if (autoClickBPS > 0) {

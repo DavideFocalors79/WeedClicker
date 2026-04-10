@@ -22,7 +22,7 @@
     </div>
     <div class="prestige-stats">✨ Molt. Prestigio: x<span id="prestige-display">1</span> | Molt. Permanente: x<span id="perm-mult-display">1</span> ✨</div>
     <div class="global-mult">Mult Click: <span id="global-click-mult">1</span>x | Mult BPS: <span id="global-bps-mult">1</span>x</div>
-    <div class="global-mult" style="color:#f9a825;">🌟 Aura: <span id="aura-points-display">0</span> ✦ | x<span id="aura-mult-display">1</span> | #<span id="aura-count-display">0</span></div>
+    <div class="global-mult" style="color:#f9a825;">🌟 Aura: <span id="aura-points-display">0</span> ✦ | +<span id="aura-mult-display">1</span> base | #<span id="aura-count-display">0</span></div>
     <div class="global-mult" style="color:#e0b0ff;font-size:15px;" id="topbar-aura-shop">—</div>
 </div>
 
@@ -52,6 +52,7 @@
             <button id="nav-battlepass" class="nav-btn" onclick="switchPage('battlepass')">Battle Pass</button>
             <button id="nav-blackjack" class="nav-btn" onclick="switchPage('blackjack')">🃏 Blackjack</button>
             <button id="nav-bitcoin" class="nav-btn" onclick="switchPage('bitcoin')">₿ Bitcoin</button>
+            <button id="nav-btcshop" class="nav-btn" onclick="switchPage('btcshop')" style="background:linear-gradient(135deg,#1a2e0a,#f9a825);color:#fff;border-color:#f9a825;">💰 BTC Shop</button>
             <button id="nav-aviator" class="nav-btn" onclick="switchPage('aviator')">✈️ Aviator</button>
             <button id="nav-aura" class="nav-btn" onclick="switchPage('aura')" style="background:linear-gradient(135deg,#1a0a2e,#f9a825);color:#fff;border-color:#f9a825;">🌟 Aura</button>
         </div>
@@ -231,6 +232,27 @@
                 </div>
             </div>
 
+            <!-- BTC CLICK SHOP PAGE -->
+            <div id="page-btcshop" class="page">
+                <h2>💰 BTC Click Shop</h2>
+                <div class="info-box">
+                    Spendi i tuoi <strong>Bitcoin</strong> per potenziamenti permanenti al Click!<br>
+                    Questi upgrade <strong>non si resettano</strong> mai, neanche con l'Aura Prestige.<br>
+                    Accumula BTC dai tuoi Miner nella tab Bitcoin.
+                </div>
+                <div style="background:#1a1a0a;border:1px solid #f9a825;border-radius:10px;padding:12px;margin-bottom:12px;text-align:center;">
+                    ₿ BTC disponibili: <strong style="color:#f9a825;font-size:18px;" id="btcshop-balance">0.000</strong>
+                </div>
+                <div class="shop">
+                    <button id="btc-click-upg-1" class="upg-btn" onclick="buyBtcClickUpgrade(1)" style="background:#1a2a0a;border:1px solid #f9a825;margin-bottom:6px;"></button>
+                    <button id="btc-click-upg-2" class="upg-btn" onclick="buyBtcClickUpgrade(2)" style="background:#1a2a0a;border:1px solid #f9a825;margin-bottom:6px;"></button>
+                    <button id="btc-click-upg-3" class="upg-btn" onclick="buyBtcClickUpgrade(3)" style="background:#1a2a0a;border:1px solid #f9a825;margin-bottom:6px;"></button>
+                    <button id="btc-click-upg-4" class="upg-btn" onclick="buyBtcClickUpgrade(4)" style="background:#1a2a0a;border:1px solid #f9a825;margin-bottom:6px;"></button>
+                    <button id="btc-click-upg-5" class="upg-btn" onclick="buyBtcClickUpgrade(5)" style="background:#1a2a0a;border:1px solid #f9a825;margin-bottom:6px;"></button>
+                    <button id="btc-click-upg-6" class="upg-btn" onclick="buyBtcClickUpgrade(6)" style="background:#1a2a0a;border:1px solid #f9a825;margin-bottom:6px;"></button>
+                </div>
+            </div>
+
             <!-- AVIATOR PAGE -->
             <div id="page-aviator" class="page">
                 <h2>✈️ Aviator</h2>
@@ -311,7 +333,6 @@
                     <button id="aura-shop-clickBoost" class="upg-btn" onclick="buyAuraUpgrade('clickBoost')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
                     <button id="aura-shop-bpsBoost" class="upg-btn" onclick="buyAuraUpgrade('bpsBoost')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
                     <button id="aura-shop-btcBoost" class="upg-btn" onclick="buyAuraUpgrade('btcBoost')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
-                    <button id="aura-shop-tokenInterval" class="upg-btn" onclick="buyAuraUpgrade('tokenInterval')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
                     <button id="aura-shop-prestigeBonus" class="upg-btn" onclick="buyAuraUpgrade('prestigeBonus')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
                     <button id="aura-shop-startMult" class="upg-btn" onclick="buyAuraUpgrade('startMult')" style="background:#1a003a;border:1px solid #8a2be2;margin-bottom:6px;"></button>
                 </div>
@@ -321,7 +342,6 @@
                     <div style="color:#8a2be2;font-size:18px;font-weight:900;margin-bottom:12px;letter-spacing:2px;">💸 COSTO AURA PRESTIGE</div>
                     <div style="color:#ccc;font-size:16px;margin:6px 0;">🌿 Grammi: <strong style="color:#4CAF50;" id="aura-cost-grammi">200.000.000.000</strong></div>
                     <div style="color:#ccc;font-size:16px;margin:6px 0;">🔷 Token: <strong style="color:#90caf9;" id="aura-cost-token">1.000</strong></div>
-                    <div style="color:#ccc;font-size:16px;margin:6px 0;">₿ BTC: <strong style="color:#f9a825;" id="aura-cost-btc">50</strong></div>
                 </div>
 
                 <div style="display:flex;gap:10px;margin-bottom:14px;">
@@ -331,7 +351,7 @@
                     </div>
                     <div style="flex:1;background:#0a2e0a;border:1px solid #00e676;border-radius:10px;padding:14px;">
                         <div style="color:#00e676;font-weight:bold;font-size:16px;margin-bottom:6px;">✅ GUADAGNI</div>
-                        <div style="color:#cbd5e1;font-size:14px;line-height:1.7;">+10 Punti Aura (✦)<br>Mult base x10<br>Upgrade shop restano!</div>
+                        <div style="color:#cbd5e1;font-size:14px;line-height:1.7;">+10 Punti Aura (✦)<br>+10 al Molt. base<br>Upgrade shop restano!</div>
                     </div>
                 </div>
 
