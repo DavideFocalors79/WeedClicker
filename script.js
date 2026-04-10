@@ -16,7 +16,6 @@ let clickUpgradeCost = 15;
 let autoClickerCost = 100;
 let dryCost = 1200;
 let frozenCost = 8000;
-let mysteryCost = 1000;
 let prestigeThreshold = 500000;  // primo prestige richiede 500k grammi
 
 // Variabili per i Potenziamenti (Upgrade)
@@ -73,8 +72,6 @@ let permanentPrestigeMultiplier = 1;
 let permanentTokensPerSecond = 1; // moltiplicatore tokens/s
 let permanentBtcMultiplier = 1;   // moltiplicatore produzione BTC
 
-let isSpinning = false;
-
 // --- AURA PRESTIGE ---
 let auraPoints = 0;
 let auraPrestigeCount = 0;
@@ -90,6 +87,7 @@ let btcClickUpgrade4 = false; // Click x2 permanente
 let btcClickUpgrade5 = false; // +1000 click base
 let btcClickUpgrade6 = false; // Click x5 permanente
 let btcClickMultiplier = 1;   // moltiplicatore cumulativo BTC click
+let btcClickBonus = 0;        // bonus click base permanente (non si resetta)
 
 // --- NEGOZIO AURA (upgrade con Punti Aura, NON resettano mai) ---
 let auraShop = {
@@ -136,7 +134,7 @@ function getEffClick() {
   if (hasUpgrade7) multiplier *= 5;
   if (hasUpgrade9) multiplier *= 6;
   const effectivePrestige = prestigeMultiplier * permanentPrestigeMultiplier;
-  return clickPower * multiplier * effectivePrestige * permanentClickMultiplier * auraBaseMultiplier * auraShop.clickBoost * btcClickMultiplier;
+  return (clickPower + btcClickBonus) * multiplier * effectivePrestige * permanentClickMultiplier * auraBaseMultiplier * auraShop.clickBoost * btcClickMultiplier;
 }
 
 function getEffBps() {
@@ -156,7 +154,7 @@ function saveGame() {
     score: score, clickPower: clickPower, autoClickBPS: autoClickBPS,
     prestigeMultiplier: prestigeMultiplier, epsteinTokens: epsteinTokens, battlePassLevel: battlePassLevel, clickUpgradeCost: clickUpgradeCost,
     autoClickerCost: autoClickerCost, dryCost: dryCost,
-    frozenCost: frozenCost, mysteryCost: mysteryCost,
+    frozenCost: frozenCost,
     prestigeThreshold: prestigeThreshold,
     hasUpg1: hasUpgrade1, hasUpg2: hasUpgrade2, hasUpg3: hasUpgrade3, hasUpg4: hasUpgrade4,
     hasUpg5: hasUpgrade5, hasUpg6: hasUpgrade6, hasUpg7: hasUpgrade7, hasUpg8: hasUpgrade8,
@@ -181,6 +179,7 @@ function saveGame() {
     btcClickUpgrade3: btcClickUpgrade3, btcClickUpgrade4: btcClickUpgrade4,
     btcClickUpgrade5: btcClickUpgrade5, btcClickUpgrade6: btcClickUpgrade6,
     btcClickMultiplier: btcClickMultiplier,
+    btcClickBonus: btcClickBonus,
     btcClickState: JSON.stringify(btcClickState)
   };
   localStorage.setItem("IlGiroSave", JSON.stringify(gameSave));
@@ -199,7 +198,6 @@ function loadGame() {
     if (typeof savedGame.autoClickerCost !== "undefined") autoClickerCost = savedGame.autoClickerCost;
     if (typeof savedGame.dryCost !== "undefined") dryCost = savedGame.dryCost;
     if (typeof savedGame.frozenCost !== "undefined") frozenCost = savedGame.frozenCost;
-    if (typeof savedGame.mysteryCost !== "undefined") mysteryCost = savedGame.mysteryCost;
     if (typeof savedGame.prestigeThreshold !== "undefined") prestigeThreshold = savedGame.prestigeThreshold;
     if (typeof savedGame.epsteinTokens !== "undefined") epsteinTokens = savedGame.epsteinTokens;
     if (typeof savedGame.battlePassLevel !== "undefined") battlePassLevel = savedGame.battlePassLevel;
@@ -265,6 +263,7 @@ function loadGame() {
     if (typeof savedGame.btcClickUpgrade5 !== "undefined") btcClickUpgrade5 = savedGame.btcClickUpgrade5;
     if (typeof savedGame.btcClickUpgrade6 !== "undefined") btcClickUpgrade6 = savedGame.btcClickUpgrade6;
     if (typeof savedGame.btcClickMultiplier !== "undefined") btcClickMultiplier = savedGame.btcClickMultiplier;
+    if (typeof savedGame.btcClickBonus !== "undefined") btcClickBonus = savedGame.btcClickBonus;
     if (typeof savedGame.btcClickState !== "undefined") {
       try { Object.assign(btcClickState, JSON.parse(savedGame.btcClickState)); } catch(e) {}
     }
@@ -343,7 +342,7 @@ function buyPiantagione() {
   if (score >= piantagioneCurrentCost) {
     score -= piantagioneCurrentCost;
     piantagioneCount++;
-    autoClickBPS += 40;
+    autoClickBPS += 22;
     piantagioneCurrentCost = Math.floor(piantagioneBaseCost * Math.pow(1.12, piantagioneCount));
     updateDisplay();
   }
@@ -354,7 +353,7 @@ function buyLaboratorio() {
   if (score >= laboratorioCurrentCost) {
     score -= laboratorioCurrentCost;
     laboratorioCount++;
-    autoClickBPS += 200;
+    autoClickBPS += 80;
     laboratorioCurrentCost = Math.floor(laboratorioBaseCost * Math.pow(1.12, laboratorioCount));
     updateDisplay();
   }
@@ -365,7 +364,7 @@ function buyCartel() {
   if (score >= cartelCurrentCost) {
     score -= cartelCurrentCost;
     cartelCount++;
-    autoClickBPS += 1200;
+    autoClickBPS += 350;
     cartelCurrentCost = Math.floor(cartelBaseCost * Math.pow(1.12, cartelCount));
     updateDisplay();
   }
@@ -376,7 +375,7 @@ function buyNarcosub() {
   if (score >= narcosubCurrentCost) {
     score -= narcosubCurrentCost;
     narcosubCount++;
-    autoClickBPS += 8000;
+    autoClickBPS += 1500;
     narcosubCurrentCost = Math.floor(narcosubBaseCost * Math.pow(1.12, narcosubCount));
     updateDisplay();
   }
@@ -387,7 +386,7 @@ function buyChimica() {
   if (score >= chimicaCurrentCost) {
     score -= chimicaCurrentCost;
     chimicaCount++;
-    autoClickBPS += 60000;
+    autoClickBPS += 7000;
     chimicaCurrentCost = Math.floor(chimicaBaseCost * Math.pow(1.12, chimicaCount));
     updateDisplay();
   }
@@ -608,11 +607,11 @@ function updateAuraDisplay() {
 
 // --- BTC CLICK UPGRADES ---
 const btcClickDefs = [
-  { id: 1, key: 'btcClickUpgrade1', icon: '⚡', label: '+50 Click Base',        cost: 0.05,  effect: () => { clickPower += 50; } },
+  { id: 1, key: 'btcClickUpgrade1', icon: '⚡', label: '+50 Click Base',        cost: 0.05,  effect: () => { btcClickBonus += 50; } },
   { id: 2, key: 'btcClickUpgrade2', icon: '🔥', label: 'Click x1.5 Permanente', cost: 0.15,  effect: () => { btcClickMultiplier *= 1.5; } },
-  { id: 3, key: 'btcClickUpgrade3', icon: '⚡', label: '+200 Click Base',        cost: 0.5,   effect: () => { clickPower += 200; } },
+  { id: 3, key: 'btcClickUpgrade3', icon: '⚡', label: '+200 Click Base',        cost: 0.5,   effect: () => { btcClickBonus += 200; } },
   { id: 4, key: 'btcClickUpgrade4', icon: '🔥', label: 'Click x2 Permanente',   cost: 1.5,   effect: () => { btcClickMultiplier *= 2; } },
-  { id: 5, key: 'btcClickUpgrade5', icon: '⚡', label: '+1000 Click Base',       cost: 5,     effect: () => { clickPower += 1000; } },
+  { id: 5, key: 'btcClickUpgrade5', icon: '⚡', label: '+1000 Click Base',       cost: 5,     effect: () => { btcClickBonus += 1000; } },
   { id: 6, key: 'btcClickUpgrade6', icon: '🌌', label: 'Click x5 Permanente',   cost: 15,    effect: () => { btcClickMultiplier *= 5; } },
 ];
 
@@ -803,7 +802,7 @@ function updateDisplay() {
   if (hasUpgrade3) clickMult *= 3;
   if (hasUpgrade5) clickMult *= 4;
   if (hasUpgrade7) clickMult *= 5;
-  clickMult *= prestigeMultiplier * permanentPrestigeMultiplier * permanentClickMultiplier * auraBaseMultiplier * auraShop.clickBoost;
+  clickMult *= prestigeMultiplier * permanentPrestigeMultiplier * permanentClickMultiplier * auraBaseMultiplier * auraShop.clickBoost * btcClickMultiplier;
   document.getElementById('global-click-mult').textContent = formatNum(Math.floor(clickMult));
 
   let bpsMult = 1;
@@ -845,20 +844,20 @@ function updateDisplay() {
   const btcTopbar = document.getElementById('btc-topbar-display');
   if (btcTopbar) btcTopbar.textContent = btcBalance.toFixed(3);
 
-  document.getElementById('btn-click-upgrade').disabled = score < clickUpgradeCost || isSpinning;
-  document.getElementById('btn-auto-click').disabled = score < autoClickerCost || isSpinning;
-  document.getElementById('btn-dry').disabled = score < dryCost || isSpinning;
-  document.getElementById('btn-frozen').disabled = score < frozenCost || isSpinning;
-  document.getElementById('btn-spacciatore').disabled = score < spacciatoreCurrentCost || isSpinning;
-  document.getElementById('btn-piantagione').disabled = score < piantagioneCurrentCost || isSpinning;
-  document.getElementById('btn-laboratorio').disabled = score < laboratorioCurrentCost || isSpinning;
+  document.getElementById('btn-click-upgrade').disabled = score < clickUpgradeCost;
+  document.getElementById('btn-auto-click').disabled = score < autoClickerCost;
+  document.getElementById('btn-dry').disabled = score < dryCost;
+  document.getElementById('btn-frozen').disabled = score < frozenCost;
+  document.getElementById('btn-spacciatore').disabled = score < spacciatoreCurrentCost;
+  document.getElementById('btn-piantagione').disabled = score < piantagioneCurrentCost;
+  document.getElementById('btn-laboratorio').disabled = score < laboratorioCurrentCost;
   const btnCartel = document.getElementById('btn-cartel');
-  if (btnCartel) btnCartel.disabled = score < cartelCurrentCost || isSpinning;
+  if (btnCartel) btnCartel.disabled = score < cartelCurrentCost;
   const btnNarcosub = document.getElementById('btn-narcosub');
-  if (btnNarcosub) btnNarcosub.disabled = score < narcosubCurrentCost || isSpinning;
+  if (btnNarcosub) btnNarcosub.disabled = score < narcosubCurrentCost;
   const btnChimica = document.getElementById('btn-chimica');
-  if (btnChimica) btnChimica.disabled = score < chimicaCurrentCost || isSpinning;
-  document.getElementById('btn-prestige').disabled = score < prestigeThreshold || isSpinning;
+  if (btnChimica) btnChimica.disabled = score < chimicaCurrentCost;
+  document.getElementById('btn-prestige').disabled = score < prestigeThreshold;
 
   function setUpgBtnState(btn, hasBought, cost, title) {
     if (!btn) return;
@@ -869,7 +868,7 @@ function updateDisplay() {
     } else {
       btn.textContent = `${title} - ${formatNum(cost)}`;
       btn.classList.remove('bought');
-      btn.disabled = score < cost || isSpinning;
+      btn.disabled = score < cost;
     }
   }
 
@@ -892,7 +891,7 @@ function updateDisplay() {
     } else {
       btn.textContent = `${title} - ${formatNum(cost)} Token`;
       btn.classList.remove('bought');
-      btn.disabled = epsteinTokens < cost || isSpinning;
+      btn.disabled = epsteinTokens < cost;
     }
   }
 

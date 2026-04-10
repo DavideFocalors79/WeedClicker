@@ -48,7 +48,6 @@
             <button id="nav-forno" class="nav-btn active" onclick="switchPage('forno')">Il Giro</button>
             <button id="nav-upgrades" class="nav-btn" onclick="switchPage('upgrades')">Robba Buona</button>
             <button id="nav-permanent" class="nav-btn" onclick="switchPage('permanent')">L'isola</button>
-            <button id="nav-casino" class="nav-btn" onclick="switchPage('casino')">🎡 Crazy Time!</button>
             <button id="nav-battlepass" class="nav-btn" onclick="switchPage('battlepass')">Battle Pass</button>
             <button id="nav-blackjack" class="nav-btn" onclick="switchPage('blackjack')">🃏 Blackjack</button>
             <button id="nav-bitcoin" class="nav-btn" onclick="switchPage('bitcoin')">₿ Bitcoin</button>
@@ -77,19 +76,19 @@
                         💊 THC (Costo: <span id="spacciatore-cost">40000</span>) +10g/s
                     </button>
                     <button id="btn-piantagione" onclick="buyPiantagione()">
-                        🌱 Hashish (Costo: <span id="piantagione-cost">300000</span>) +40g/s
+                        🌱 Hashish (Costo: <span id="piantagione-cost">300000</span>) +22g/s
                     </button>
                     <button id="btn-laboratorio" onclick="buyLaboratorio()">
-                        🧪 GHB (Costo: <span id="laboratorio-cost">3000000</span>) +200g/s
+                        🧪 GHB (Costo: <span id="laboratorio-cost">3000000</span>) +80g/s
                     </button>
                     <button id="btn-cartel" onclick="buyCartel()">
-                        💼 Cartello (Costo: <span id="cartel-cost">30000000</span>) +1.200g/s
+                        💼 Cartello (Costo: <span id="cartel-cost">30000000</span>) +350g/s
                     </button>
                     <button id="btn-narcosub" onclick="buyNarcosub()">
-                        🚢 DMT (Costo: <span id="narcosub-cost">350000000</span>) +8.000g/s
+                        🚢 DMT (Costo: <span id="narcosub-cost">350000000</span>) +1.500g/s
                     </button>
                     <button id="btn-chimica" onclick="buyChimica()">
-                        ☠️ Fentanyl (Costo: <span id="chimica-cost">5000000000</span>) +60.000g/s
+                        ☠️ Fentanyl (Costo: <span id="chimica-cost">5000000000</span>) +7.000g/s
                     </button>
 
                     <button id="btn-prestige" onclick="doPrestige()">
@@ -133,30 +132,6 @@
                     <button id="btn-perm8" class="upg-btn" onclick="buyPermanentUpgrade(8, 30)">🔥 BPS x5 (30 Token)</button>
                     <button id="btn-perm9" class="upg-btn" onclick="buyPermanentUpgrade(9, 40)">₿ BTC Miner x2 (40 Token)</button>
                     <button id="btn-perm10" class="upg-btn" onclick="buyPermanentUpgrade(10, 60)">🌌 Zanotti Sgravo Mode (Tutto x2) (60 Token)</button>
-                </div>
-            </div>
-
-            <div id="page-casino" class="page">
-                 <h2>Il Crazy Time!</h2>
-
-                <div class="wheel-container">
-                    <div class="pointer"></div>
-                    <div class="wheel" id="wheel"></div>
-                </div>
-
-                <div class="legend">
-                    <div><span class="color-box" style="background: #f44336;"></span> Sfortuna (Niente) - 40%</div>
-                    <div><span class="color-box" style="background: #2196F3;"></span> Triplica la Robba - 35%</div>
-                    <div><span class="color-box" style="background: #4CAF50;"></span> +25 Base per Click - 20%</div>
-                    <div><span class="color-box" style="background: #FFD700;"></span> <b>JACKPOT (+150 W/s) - 5%</b></div>
-                </div>
-
-                <div id="wheel-result" class="wheel-result">Risultato ruota: nessuna giocata ancora</div>
-
-                <div class="shop">
-                    <button id="btn-mystery" onclick="spinWheel()">
-                        🎡 Gira la Ruota (Costo: <span id="mystery-cost">1000</span>)
-                    </button>
                 </div>
             </div>
 
@@ -370,7 +345,6 @@
 <script src="script.js"></script>
 <script src="socrate_event.js"></script>
 <script src="minesweeper_event.js"></script>
-<script src="crazy_time.js"></script>
 <script src="shell_game_event.js"></script>
 </body>
 </html>
