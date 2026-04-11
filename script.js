@@ -607,13 +607,14 @@ function updateAuraDisplay() {
 
 // --- BTC CLICK UPGRADES ---
 const btcClickDefs = [
-  { id: 1, key: 'btcClickUpgrade1', icon: '⚡', label: '+50 Click Base',        cost: 0.05,  effect: () => { btcClickBonus += 50; } },
-  { id: 2, key: 'btcClickUpgrade2', icon: '🔥', label: 'Click x1.5 Permanente', cost: 0.15,  effect: () => { btcClickMultiplier *= 1.5; } },
-  { id: 3, key: 'btcClickUpgrade3', icon: '⚡', label: '+200 Click Base',        cost: 0.5,   effect: () => { btcClickBonus += 200; } },
-  { id: 4, key: 'btcClickUpgrade4', icon: '🔥', label: 'Click x2 Permanente',   cost: 1.5,   effect: () => { btcClickMultiplier *= 2; } },
-  { id: 5, key: 'btcClickUpgrade5', icon: '⚡', label: '+1000 Click Base',       cost: 5,     effect: () => { btcClickBonus += 1000; } },
-  { id: 6, key: 'btcClickUpgrade6', icon: '🌌', label: 'Click x5 Permanente',   cost: 15,    effect: () => { btcClickMultiplier *= 5; } },
+  { id: 1, key: 'btcClickUpgrade1', icon: '⚡', label: '+50 Click Base',        cost: 1,  effect: () => { btcClickBonus += 50; } },
+  { id: 2, key: 'btcClickUpgrade2', icon: '🔥', label: 'Click x1.5 Permanente', cost: 3,  effect: () => { btcClickMultiplier *= 1.5; } },
+  { id: 3, key: 'btcClickUpgrade3', icon: '⚡', label: '+200 Click Base',        cost: 5,   effect: () => { btcClickBonus += 200; } },
+  { id: 4, key: 'btcClickUpgrade4', icon: '🔥', label: 'Click x2 Permanente',   cost: 7,   effect: () => { btcClickMultiplier *= 2; } },
+  { id: 5, key: 'btcClickUpgrade5', icon: '⚡', label: '+1000 Click Base',       cost: 9,     effect: () => { btcClickBonus += 1000; } },
+  { id: 6, key: 'btcClickUpgrade6', icon: '🌌', label: 'Click x5 Permanente',   cost: 11,    effect: () => { btcClickMultiplier *= 5; } },
 ];
+
 
 const btcClickState = {
   btcClickUpgrade1: false,
@@ -835,7 +836,7 @@ function updateDisplay() {
   if (narcosubEl) narcosubEl.textContent = formatNum(narcosubCurrentCost);
   const chimicaEl = document.getElementById('chimica-cost');
   if (chimicaEl) chimicaEl.textContent = formatNum(chimicaCurrentCost);
-  prestigeDisplay.textContent = formatNum(prestigeMultiplier);
+  if (prestigeDisplay) prestigeDisplay.textContent = formatNum(prestigeMultiplier);
   document.getElementById('epstein-token-display').textContent = formatNum(epsteinTokens);
   document.getElementById('bj-tokens').textContent = formatNum(epsteinTokens);
   prestigeCostDisplay.textContent = formatNum(prestigeThreshold);
