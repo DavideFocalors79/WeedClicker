@@ -1,2 +1,2 @@
-# [Play Weed Clicker](focalorsfurina.altervista.org)
+# [Play Weed Clicker](https://focalorsfurina.altervista.org/)
 
